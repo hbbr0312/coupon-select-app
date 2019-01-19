@@ -9,8 +9,10 @@ import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,17 +31,26 @@ import java.net.MalformedURLException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.URL;
+import java.util.HashMap;
 
 public class RegisterActivity extends AppCompatActivity implements MyEventListener {
     private Button duplecheck;
     private Button register;
+
     private EditText editId;
     private EditText editPw;
     private EditText editName;
     private EditText editPhone;
+    private EditText editCode;
+
     private TextView comment;
 
+    private HashMap<String, String> codematch = new HashMap(); //TODO: code넣어주기 key:store, value:code
+
     private String validId="";
+    private String store;
+    private String code;
+
     private int index; //1:duplication check, 2:register
     private boolean valid = false;
 
@@ -50,6 +61,16 @@ public class RegisterActivity extends AppCompatActivity implements MyEventListen
             }
         }
         return true;
+    }
+    //store와 code가 맞는지 확인하고 틀리면 store를 ""로 지정해줌
+    public void isManager(){
+        code = editCode.getText().toString();
+        if(store==null) {
+            store = "";
+            Toast.makeText(RegisterActivity.this,"일반 사용자입니다.",Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if(!codematch.get(store).equals(code)) store="";
     }
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -63,6 +84,18 @@ public class RegisterActivity extends AppCompatActivity implements MyEventListen
         editName = (EditText) findViewById(R.id.editName);
         editPhone = (EditText) findViewById(R.id.editPhone);
         comment = (TextView) findViewById(R.id.comment);
+        editCode = (EditText) findViewById(R.id.editcode);
+
+        Spinner s = (Spinner)findViewById(R.id.spinner1);
+        s.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view,
+                                       int position, long id) {
+                store = parent.getItemAtPosition(position).toString();
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {}
+        });
 
         editId.addTextChangedListener(new TextWatcher() {
             @Override
@@ -135,7 +168,10 @@ public class RegisterActivity extends AppCompatActivity implements MyEventListen
     }
     public void startEvent(){
         if(index==1) new GETing(this).execute("http://socrip4.kaist.ac.kr:3780/getidvalidity?id="+editId.getText().toString());
-        else if(index==2) new POSTing(this).execute("http://socrip4.kaist.ac.kr:3780/postmember");
+        else if(index==2) {
+            isManager();
+            new POSTing(this).execute("http://socrip4.kaist.ac.kr:3780/postmember");
+        }
     }
     @Override
     public void onEventCompleted(){
@@ -253,6 +289,7 @@ public class RegisterActivity extends AppCompatActivity implements MyEventListen
                 jsonObject.accumulate("password",editPw.getText().toString());
                 jsonObject.accumulate("name",editName.getText().toString());
                 jsonObject.accumulate("phone",editPhone.getText().toString());
+                jsonObject.accumulate("store",store);
 
                 HttpURLConnection con = null;
                 BufferedReader reader = null;

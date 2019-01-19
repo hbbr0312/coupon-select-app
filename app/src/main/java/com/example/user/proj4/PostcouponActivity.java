@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -13,6 +14,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -33,19 +36,90 @@ public class PostcouponActivity extends AppCompatActivity implements MyEventList
     public String code; //1:사용, 0:적립
 
     private TextView comment;
+    private TextView viewid;
+    private TextView viewpoint;
+    private TextView storename;
+
     private EditText pointnum;
-    private boolean validedit;
+    private EditText usenum;
+
+    private Button useinc;
+    private Button usedec;
+    private Button pointdec;
+    private Button pointinc;
+
+    private boolean validedit=true; //포인트입력란에 숫자입력했는지
+    private boolean usevalidedit=true; //사용입력란에 숫자입력했는지
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.login);
+        setContentView(R.layout.post_coupon);
 
+        comment = (TextView) findViewById(R.id.comment1); //warning comment
+        storename = (TextView) findViewById(R.id.storename); //storename
+
+        /**user information*/
+        viewid = (TextView) findViewById(R.id.viewid);
+        viewpoint = (TextView) findViewById(R.id.viewpoint);
+
+        /**point use*/
+        usedec = (Button) findViewById(R.id.usedec); //use point decrease button
+        useinc = (Button) findViewById(R.id.useinc); //use point increase button
+        usenum = (EditText) findViewById(R.id.useedit); //사용 point 입력란
+        usenum.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                // 입력되는 텍스트에 변화가 있을 때
+            }
+
+            @Override
+            public void afterTextChanged(Editable arg0) {
+                // 입력이 끝났을 때
+                if(!isNumber(usenum.getText().toString())){
+                    comment.setText("숫자만 입력해주세요");
+                    usevalidedit=false;
+                }
+                else {
+                    comment.setText("");
+                    usevalidedit=true;
+                }
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                // 입력하기 전에
+            }
+        });
+        usedec.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                changeEdit(usenum,true);
+            }
+        });
+        useinc.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                changeEdit(usenum,false);
+            }
+        });
         Button use = (Button) findViewById(R.id.use); //사용버튼
-        Button point = (Button) findViewById(R.id.point); //적립버튼
-        comment = (TextView) findViewById(R.id.comment1);
-        pointnum = (EditText) findViewById(R.id.editpoint);
+        use.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(usevalidedit){
+                    int d = Integer.parseInt(usenum.getText().toString())*10; //10번적립해야 한번 사용
+                    change = Integer.toString(d);
+                    code="1";
+                    startEvent();
+                }
+            }
+        });
 
+        /**point accumulate*/
+        pointdec = (Button) findViewById(R.id.pointdec); //point decrease button
+        pointinc = (Button) findViewById(R.id.pointinc); //point increase button
+        pointnum = (EditText) findViewById(R.id.pointedit); //적립 point 입력란
         pointnum.addTextChangedListener(new TextWatcher() {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -69,17 +143,25 @@ public class PostcouponActivity extends AppCompatActivity implements MyEventList
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
                 // 입력하기 전에
             }
-        }); //phone number 숫자만만
-
-        use.setOnClickListener(new View.OnClickListener() {
+        });
+        pointdec.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                changeEdit(pointnum,true);
             }
         });
+        pointinc.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                changeEdit(pointnum,false);
+            }
+        });
+        Button point = (Button) findViewById(R.id.point); //적립버튼
         point.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Log.e("click","point post");
+                Log.e("validedit",""+validedit);
                 if(validedit){
                     change = pointnum.getText().toString();
                     code ="0";
@@ -87,8 +169,19 @@ public class PostcouponActivity extends AppCompatActivity implements MyEventList
                 }
             }
         });
-
     }
+
+    //+ - 버튼으로 숫자 증감
+    public void changeEdit(EditText edit, boolean isDec){
+        int master = Integer.parseInt(edit.getText().toString());
+        if(isDec&&master>0){
+            master--;
+        }else if(!isDec){
+            master++;
+        }else return;
+        edit.setText(Integer.toString(master));
+    }
+
     public boolean isNumber(String test){
         for(int i =0; i<test.length(); i++){
             if(test.charAt(i)-48>=10 || test.charAt(i)<0){
@@ -97,15 +190,22 @@ public class PostcouponActivity extends AppCompatActivity implements MyEventList
         }
         return true;
     }
+
+    public void updateinfo(String id, String point){
+        viewid.setText("user id : "+id);
+        viewpoint.setText("point : "+point);
+    }
     public void startEvent(){
         new POSTing(this).execute("http://socrip4.kaist.ac.kr:3980/postcouponinfo");
     }
     @Override
     public void onEventCompleted(){
+        Log.e("event","completed");
     }
 
     @Override
     public void onEventFailed(){
+        Log.e("event","failed");
     }
 
     public class POSTing extends AsyncTask<String, String, String> {
@@ -120,9 +220,10 @@ public class PostcouponActivity extends AppCompatActivity implements MyEventList
                 JSONObject jsonObject = new JSONObject();
                 jsonObject.accumulate("store",store);
                 jsonObject.accumulate("id",userid);
-                jsonObject.accumulate("change",change+"");
-                jsonObject.accumulate("code",code+"");
+                jsonObject.accumulate("change",change);
+                jsonObject.accumulate("code",code);
 
+                Log.e("enter","doInBackground");
                 HttpURLConnection con = null;
                 BufferedReader reader = null;
 
@@ -162,23 +263,22 @@ public class PostcouponActivity extends AppCompatActivity implements MyEventList
                     reader = new BufferedReader(new InputStreamReader(stream));
                     Log.e("status", "6");
                     reader.read();
-                    Log.e("status", "6");
+                    Log.e("status", "7");
                     StringBuffer buffer = new StringBuffer();
-                    Log.e("status", "6");
+                    Log.e("status", "8");
                     String line;
 
                     while ((line = reader.readLine()) != null) {
                         buffer.append(line);
                     }
-                    Log.e("status", "6");
+                    Log.e("status", "9");
                     reader.close();
-                    Log.e("status", "6");
+                    Log.e("status", "10");
 
                     String answer = buffer.toString();
                     Log.e("answer",answer);
-                    //answer = "{"+answer;
 
-                    return "";//buffer.toString();//서버로 부터 받은 값을 리턴해줌 아마 OK!!가 들어올것임
+                    return answer;
 
                 } catch (MalformedURLException e){ //new URL() falied
                     e.printStackTrace();
@@ -218,6 +318,20 @@ public class PostcouponActivity extends AppCompatActivity implements MyEventList
             super.onPostExecute(result);
             if(callback!=null){
                 callback.onEventCompleted();
+            }
+            try {
+                JSONObject iter = new JSONObject(result);
+                updateinfo(iter.getString("id"),iter.getString("num_coupon"));
+                Log.e("id",iter.getString("id"));
+                Log.e("num_coupon",iter.getString("num_coupon"));
+                //String mobile = iter.getString("mobile");
+                //String img = iter.getString("img");
+
+
+
+            } catch (JSONException e) {
+                Log.e("json", "error");
+                e.printStackTrace();
             }
         }
     }

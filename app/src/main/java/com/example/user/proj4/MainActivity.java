@@ -86,8 +86,8 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
         if(id == R.id.nav_login){
-            Intent intent = new Intent(MainActivity.this,LoginActivity.class);
-            startActivity(intent);
+            Intent intent1 = new Intent(MainActivity.this,LoginActivity.class);
+            startActivity(intent1);
         }
         else if (id == R.id.nav_camera) {
             // Handle the camera action
@@ -96,7 +96,8 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_slideshow) {
 
         } else if (id == R.id.nav_manage) {
-
+            Intent intent = new Intent(MainActivity.this,PostcouponActivity.class);
+            startActivity(intent);
         } else if (id == R.id.nav_share) {
 
         } else if (id == R.id.nav_send) {
