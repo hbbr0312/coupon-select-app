@@ -1,9 +1,12 @@
 package com.example.user.proj4;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -13,11 +16,26 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
+
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.WriterException;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.QRCodeWriter;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    public static boolean login=false;
+    public static boolean ismanager = false;
+    public static String userid;
+    public static String name;
+    public static String phone;
+    private ImageView qrcode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +64,56 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
 
+
+        ListView lv = (ListView) findViewById(R.id.ListView);
+
+
+
+    }
+
+    @Override
+    protected void onStart(){
+        super.onStart();
+        invalidateOptionsMenu();
+        Log.e("main","onstart");
+        Log.e("main public login",""+login);
+        Log.e("main public ismanager",""+ismanager);
+        //login 했을때 //TODO:user정보를 nav_header_main에 setText(), login menu사라지고 logout? , user id로 qrcode생성
+        if(login){
+            qrcode = (ImageView) findViewById(R.id.qrcode);
+            Bitmap bitmap = generateQRCode("test1"); //userid로 바꾸기
+            qrcode.setImageBitmap(bitmap);
+        }
+        //manager일때 //TODO:관리자 탭보이도록 일반유저면 안보이게
+        if(ismanager){
+
+        }
+
+        //listview
+    }
+    public static Bitmap generateQRCode(String contents) {
+        Bitmap bitmap = null;
+
+        try {
+            QRCodeWriter qrCodeWriter = new QRCodeWriter();
+            bitmap = toBitmap(qrCodeWriter.encode(contents, BarcodeFormat.QR_CODE, 200, 200));
+        } catch (WriterException e) {
+            e.printStackTrace();
+        }
+
+        return bitmap;
+    }
+
+    private static Bitmap toBitmap(BitMatrix matrix){
+        int height = matrix.getHeight();
+        int width = matrix.getWidth();
+        Bitmap bmp = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
+        for (int x = 0; x < width; x++){
+            for (int y = 0; y < height; y++){
+                bmp.setPixel(x, y, matrix.get(x, y) ? Color.BLACK : Color.WHITE);
+            }
+        }
+        return bmp;
     }
 
     @Override
@@ -61,7 +129,38 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
+        getMenuInflater().inflate(R.menu.activity_main_drawer, menu); //원래 main이었음
+        MenuItem register = menu.findItem(R.id.nav_manage);
+        //View b = findViewById(R.id.nav_manage);
+        //b.setVisibility(View.GONE);
+        if(ismanager)
+        {
+            register.setVisible(true);
+            Log.e("register","setVisible true");
+        }
+        else
+        {
+            register.setVisible(false);
+            Log.e("register","setVisible false");
+        }
+        return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu){
+        /*
+        MenuItem register = menu.findItem(R.id.nav_manage);
+        if(isManager)
+        {
+            register.setVisible(true);
+            Log.e("register","setVisible false");
+        }
+        else
+        {
+            register.setVisible(false);
+            Log.e("register","setVisible false");
+        }
+        */
         return true;
     }
 

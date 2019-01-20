@@ -2,8 +2,8 @@ package com.example.user.proj4;
 
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
@@ -17,7 +17,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -29,14 +28,12 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
-import java.net.ServerSocket;
-import java.net.Socket;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-/**USER REGISTER*/
-public class RegisterActivity extends AppCompatActivity implements MyEventListener {
+
+public class managerRegister extends AppCompatActivity implements MyEventListener {
     private Button duplecheck;
     private Button register;
 
@@ -44,10 +41,18 @@ public class RegisterActivity extends AppCompatActivity implements MyEventListen
     private EditText editPw;
     private EditText editName;
     private EditText editPhone;
+    private EditText editCode;
 
     private TextView comment;
 
+    private HashMap<String, String> codematch = new HashMap(); //TODO: code넣어주기 key:store, value:code
+
+    private Spinner spinner;
+
     private String validId="";
+    private String store;
+    private String code;
+
     private int index; //1:duplication check, 2:register
     private boolean valid = false;
 
@@ -55,15 +60,46 @@ public class RegisterActivity extends AppCompatActivity implements MyEventListen
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.register);
+        setContentView(R.layout.activity_manager_register);
 
-        duplecheck = (Button) findViewById(R.id.duplecheck);
-        register = (Button) findViewById(R.id.register);
-        editId = (EditText) findViewById(R.id.editId);
-        editPw = (EditText) findViewById(R.id.editPw);
-        editName = (EditText) findViewById(R.id.editName);
-        editPhone = (EditText) findViewById(R.id.editPhone);
-        comment = (TextView) findViewById(R.id.comment);
+        duplecheck = (Button) findViewById(R.id.mduplecheck);
+        register = (Button) findViewById(R.id.mregister);
+        editId = (EditText) findViewById(R.id.meditId);
+        editPw = (EditText) findViewById(R.id.meditPw);
+        editName = (EditText) findViewById(R.id.meditName);
+        editPhone = (EditText) findViewById(R.id.meditPhone);
+        comment = (TextView) findViewById(R.id.mcomment);
+        editCode = (EditText) findViewById(R.id.meditcode);
+        spinner = (Spinner)findViewById(R.id.mspinner1);
+
+
+        //store spinner
+        ArrayList<String> storelist = new ArrayList<String>();
+        storelist.add("twosomeplace");
+        codematch.put("twosomeplace","AAA");
+        /*storelist[0] = "twosomeplace";
+        storelist[1] = "lotteria";
+        storelist[2] = "droptop";
+        storelist[3] = "ogada";
+        storelist[4] = "mangosix";
+        storelist[5] = "subway";
+        storelist[6] = "dunkindounuts";*/
+
+        ArrayAdapter spinnerAdapter;
+        spinnerAdapter = new ArrayAdapter(this, R.layout.support_simple_spinner_dropdown_item, storelist);
+        spinner.setAdapter(spinnerAdapter);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                store = spinner.getItemAtPosition(position).toString();
+                Toast.makeText(managerRegister.this,"선택된 아이템 : "+spinner.getItemAtPosition(position),Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
 
         //input condition
         editId.addTextChangedListener(new TextWatcher() {
@@ -112,7 +148,7 @@ public class RegisterActivity extends AppCompatActivity implements MyEventListen
             public void onClick(View v) {
                 index=1;
                 if(editId.getText().toString().matches("")){
-                    Toast.makeText(RegisterActivity.this,"id입력...",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(managerRegister.this,"id입력...",Toast.LENGTH_SHORT).show();
                 }
                 else startEvent();
             }
@@ -126,13 +162,14 @@ public class RegisterActivity extends AppCompatActivity implements MyEventListen
                 Log.e("editText",editId.getText().toString());
 
                 if(valid && validId.equals(editId.getText().toString())){
-                    startEvent();
-                    Log.e("click","register");
+                    if(isManager()) startEvent();
+                    else Toast.makeText(managerRegister.this,"code가 맞지않습니다.",Toast.LENGTH_SHORT).show();
                 }
-                else Toast.makeText(RegisterActivity.this,"id 중복확인을 해주세요",Toast.LENGTH_SHORT).show();
+                else Toast.makeText(managerRegister.this,"id 중복확인을 해주세요",Toast.LENGTH_SHORT).show();
             }
         });
     }
+
 
     public boolean isNumber(String test){
         for(int i =0; i<test.length(); i++){
@@ -143,22 +180,30 @@ public class RegisterActivity extends AppCompatActivity implements MyEventListen
         return true;
     }
 
+    //store와 code가 맞는지 확인
+    public boolean isManager(){
+        code = editCode.getText().toString();
+        if(!codematch.get(store).equals(code)) return true;
+        return false;
+    }
 
     public void startEvent(){
-        if(index==1) new GETing(this).execute("http://socrip4.kaist.ac.kr:3980/getidvalidity?id="+editId.getText().toString());
+        if(index==1) new GETing(this).execute("http://socrip4.kaist.ac.kr:3780/getidvalidity?id="+editId.getText().toString());
         else if(index==2) {
-            new POSTing(this).execute("http://socrip4.kaist.ac.kr:3980/postmember");
+            isManager();
+            new POSTing(this).execute("http://socrip4.kaist.ac.kr:3780/postmember");
         }
     }
     @Override
     public void onEventCompleted(){
         if(index==1){
-            if(valid) Toast.makeText(RegisterActivity.this,"사용가능한 id입니다.",Toast.LENGTH_SHORT).show();
-            else Toast.makeText(RegisterActivity.this,"이미 사용중인 id입니다.",Toast.LENGTH_SHORT).show();
+            if(valid) Toast.makeText(managerRegister.this,"사용가능한 id입니다.",Toast.LENGTH_SHORT).show();
+            else Toast.makeText(managerRegister.this,"이미 사용중인 id입니다.",Toast.LENGTH_SHORT).show();
         }
         if(index==2){
-            Toast.makeText(RegisterActivity.this,"회원가입이 완료되었습니다.",Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(getApplicationContext(), LoginActivity.class); //TODO: login 화면으로
+            Toast.makeText(managerRegister.this,"회원가입이 완료되었습니다.",Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(getApplicationContext(), MainActivity.class); //TODO: login 화면으로
+            MainActivity.ismanager=true;
             startActivity(intent);
         }
 
@@ -166,7 +211,7 @@ public class RegisterActivity extends AppCompatActivity implements MyEventListen
     }
     @Override
     public void onEventFailed(){
-        Toast.makeText(RegisterActivity.this,"falied.",Toast.LENGTH_SHORT).show();
+        Toast.makeText(managerRegister.this,"falied.",Toast.LENGTH_SHORT).show();
     }
 
 
@@ -266,7 +311,7 @@ public class RegisterActivity extends AppCompatActivity implements MyEventListen
                 jsonObject.accumulate("password",editPw.getText().toString());
                 jsonObject.accumulate("name",editName.getText().toString());
                 jsonObject.accumulate("phone",editPhone.getText().toString());
-                jsonObject.accumulate("store","");
+                jsonObject.accumulate("store",store);
 
                 HttpURLConnection con = null;
                 BufferedReader reader = null;
@@ -363,7 +408,7 @@ public class RegisterActivity extends AppCompatActivity implements MyEventListen
         }
     }
 
-
 }
+
 
 

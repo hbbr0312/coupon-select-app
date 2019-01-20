@@ -29,6 +29,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+/**관리자 메뉴*/
 public class PostcouponActivity extends AppCompatActivity implements MyEventListener{
     public String store ="kaist";//TODO:매장 매니저가 로그인하면 입력한 매장이름 받아오기
     public String userid="hbbr"; //TODO:QR code 인식해서 여기에 저장
@@ -47,6 +48,7 @@ public class PostcouponActivity extends AppCompatActivity implements MyEventList
     private Button usedec;
     private Button pointdec;
     private Button pointinc;
+    private Button scan;
 
     private boolean validedit=true; //포인트입력란에 숫자입력했는지
     private boolean usevalidedit=true; //사용입력란에 숫자입력했는지
@@ -58,6 +60,14 @@ public class PostcouponActivity extends AppCompatActivity implements MyEventList
 
         comment = (TextView) findViewById(R.id.comment1); //warning comment
         storename = (TextView) findViewById(R.id.storename); //storename
+        scan = (Button) findViewById(R.id.gotoscan);
+        scan.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent goscan = new Intent(PostcouponActivity.this, ScanActivity.class);
+                startActivity(goscan);
+            }
+        });
 
         /**user information*/
         viewid = (TextView) findViewById(R.id.viewid);

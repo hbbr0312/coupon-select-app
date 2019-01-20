@@ -11,11 +11,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
-            android:layout_marginTop="40dp"
+            android:layout_marginTop="20dp"
             android:textSize="20dp"
-            android:text = "사용자 회원가입"/>
+            android:text = "관리자 회원가입"/>
         <TextView
-            android:id="@+id/comment"
+            android:id="@+id/mcomment"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
@@ -59,6 +59,18 @@
                     android:layout_height="45dp"
                     android:gravity="center"
                     android:text="phone number" />
+                <TextView
+                    android:layout_marginTop="20dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="45dp"
+                    android:gravity="center"
+                    android:text="store name" />
+                <TextView
+                    android:layout_marginTop="20dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="45dp"
+                    android:gravity="center"
+                    android:text="store code" />
             </LinearLayout>
 
             <LinearLayout
@@ -67,30 +79,43 @@
                 android:layout_marginLeft="10dp"
                 android:orientation="vertical">
                 <EditText
-                    android:id="@+id/editId"
+                    android:id="@+id/meditId"
                     android:layout_marginTop="20dp"
                     android:layout_width="match_parent"
                     android:layout_height="45dp"
                     android:hint="id" />
                 <EditText
-                    android:id="@+id/editPw"
+                    android:id="@+id/meditPw"
                     android:layout_marginTop="20dp"
                     android:layout_width="match_parent"
                     android:layout_height="45dp"
                     android:hint="password" />
                 <EditText
-                    android:id="@+id/editName"
+                    android:id="@+id/meditName"
                     android:layout_marginTop="20dp"
                     android:layout_width="match_parent"
                     android:layout_height="45dp"
                     android:hint="name" />
 
                 <EditText
-                    android:id="@+id/editPhone"
+                    android:id="@+id/meditPhone"
                     android:layout_marginTop="20dp"
                     android:layout_width="match_parent"
                     android:layout_height="45dp"
                     android:hint="phone number" />
+
+                <Spinner
+                    android:id="@+id/mspinner1"
+                    android:layout_marginTop="20dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="45dp"/>
+
+                <EditText
+                    android:id="@+id/meditcode"
+                    android:layout_marginTop="20dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="45dp"
+                    android:hint="code" />
             </LinearLayout>
 
             <LinearLayout
@@ -100,7 +125,7 @@
                 android:layout_marginBottom="90dp">
 
                 <Button
-                    android:id="@+id/duplecheck"
+                    android:id="@+id/mduplecheck"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="중복확인" />
@@ -109,12 +134,11 @@
 
         </LinearLayout>
 
-
         <Button
             android:layout_marginTop="20dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/register"
+            android:id="@+id/mregister"
             android:text="register"/>
 
     </LinearLayout>

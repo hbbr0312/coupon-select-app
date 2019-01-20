@@ -62,13 +62,14 @@ public class LoginActivity extends AppCompatActivity implements MyEventListener{
         register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), RegisterActivity.class);
+                Intent intent = new Intent(getApplicationContext(), registerWhichone.class);
                 startActivity(intent);
             }
         });
+
     }
     public void startEvent(){
-        new POSTing(this).execute("http://socrip4.kaist.ac.kr:3780/postlogin");
+        new POSTing(this).execute("http://socrip4.kaist.ac.kr:3980/postlogin");
     }
     @Override
     public void onEventCompleted(){
@@ -76,7 +77,7 @@ public class LoginActivity extends AppCompatActivity implements MyEventListener{
         if(loginsuccess==1) {
             Log.e("Login","success!!");
             Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-
+            MainActivity.login = true;
             startActivity(intent);
         }
         else if(loginsuccess==-1) Log.e("Login","존재하지않는 id ");
