@@ -3,6 +3,7 @@
     package="com.example.user.proj4">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -27,7 +28,8 @@
         <activity android:name=".PostcouponActivity" />
         <activity android:name=".managerRegister" />
         <activity android:name=".registerWhichone" />
-        <activity android:name=".ScanActivity"></activity>
+        <activity android:name=".couponsActivity" />
+        <activity android:name=".couponsettingActivity"></activity>
     </application>
 
 </manifest>

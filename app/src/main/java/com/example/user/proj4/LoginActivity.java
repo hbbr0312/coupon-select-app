@@ -5,6 +5,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -12,6 +13,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -25,16 +28,21 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-public class LoginActivity extends AppCompatActivity implements MyEventListener{
+public class LoginActivity extends AppCompatActivity implements MyEventListener {
     private Button login;
     private Button register;
     private EditText id;
     private EditText password;
     private String idinput;
     private String pwinput;
-    private String name = "heo";
-    private String phone = "01076767676";
-    private int loginsuccess=2; //1:success , 0:not match ,-1:id does not exist
+
+    private String name;
+    private String phone;
+    private String storename;
+    private String userid;
+    private boolean ismanager = false;
+
+    private int loginsuccess = 2; //1:success , 0:not match ,-1:id does not exist
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,11 +59,11 @@ public class LoginActivity extends AppCompatActivity implements MyEventListener{
             public void onClick(View v) {
                 idinput = id.getText().toString();
                 pwinput = password.getText().toString();
-                if(idinput.matches("")){
-                    Toast.makeText(LoginActivity.this,"id를 입력해주세요",Toast.LENGTH_SHORT).show();
-                }else if(pwinput.matches("")){
-                    Toast.makeText(LoginActivity.this,"password를 입력해주세요",Toast.LENGTH_SHORT).show();
-                }else startEvent();
+                if (idinput.matches("")) {
+                    Toast.makeText(LoginActivity.this, "id를 입력해주세요", Toast.LENGTH_SHORT).show();
+                } else if (pwinput.matches("")) {
+                    Toast.makeText(LoginActivity.this, "password를 입력해주세요", Toast.LENGTH_SHORT).show();
+                } else startEvent();
 
             }
         });
@@ -68,31 +76,34 @@ public class LoginActivity extends AppCompatActivity implements MyEventListener{
         });
 
     }
-    public void startEvent(){
+
+    public void startEvent() {
         new POSTing(this).execute("http://socrip4.kaist.ac.kr:3980/postlogin");
     }
+
     @Override
-    public void onEventCompleted(){
-        //TODO:앱 Main으로 넘어가기
-        if(loginsuccess==1) {
-            Log.e("Login","success!!");
-            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+    public void onEventCompleted() {
+        if (loginsuccess == 1) {
+            Log.e("Login", "success!!");
+            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
             MainActivity.login = true;
+            //TODO: Main에서 id,name,phone,ismanager,(storename)지정
+            MainActivity.session.setInfo(userid, name, phone, ismanager, storename);
             startActivity(intent);
-        }
-        else if(loginsuccess==-1) Log.e("Login","존재하지않는 id ");
-        else if(loginsuccess==0) Log.e("Login","incorrect password");
+        } else if (loginsuccess == -1) Log.e("Login", "존재하지않는 id ");
+        else if (loginsuccess == 0) Log.e("Login", "incorrect password");
     }
-
 
 
     @Override
-    public void onEventFailed(){
-        Log.e("login","failed");
+    public void onEventFailed() {
+        Log.e("login", "failed");
     }
+
     public class POSTing extends AsyncTask<String, String, String> {
         private MyEventListener callback;
-        public POSTing(MyEventListener my){
+
+        public POSTing(MyEventListener my) {
             callback = my;
         }
 
@@ -100,14 +111,14 @@ public class LoginActivity extends AppCompatActivity implements MyEventListener{
         protected String doInBackground(String... urls) {
             try {
                 JSONObject jsonObject = new JSONObject();
-                jsonObject.accumulate("id",id.getText().toString());
-                jsonObject.accumulate("password",password.getText().toString());
+                jsonObject.accumulate("id", id.getText().toString());
+                jsonObject.accumulate("password", password.getText().toString());
 
                 HttpURLConnection con = null;
                 BufferedReader reader = null;
 
-                try{
-                    Log.e("enter","trial");
+                try {
+                    Log.e("enter", "trial");
                     URL url = new URL(urls[0]);
                     //연결을 함
                     con = (HttpURLConnection) url.openConnection();
@@ -124,17 +135,17 @@ public class LoginActivity extends AppCompatActivity implements MyEventListener{
                     //서버로 보내기위해서 스트림 만듬
                     OutputStream outStream = con.getOutputStream();
                     //버퍼를 생성하고 넣음
-                    Log.e("status","1");
+                    Log.e("status", "1");
                     BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outStream));
-                    Log.e("status","2");
+                    Log.e("status", "2");
                     //Log.e("status",""+con.getResponseCode());//200
                     writer.write(jsonObject.toString());
-                    Log.e("status","3");
+                    Log.e("status", "3");
                     writer.flush();
-                    Log.e("status","4");
+                    Log.e("status", "4");
                     writer.close();//버퍼를 받아줌
 
-                    Log.e("status","5");
+                    Log.e("status", "5");
                     //서버로 부터 데이터를 받음
                     InputStream stream = con.getInputStream();
                     Log.e("enter", "input stream");
@@ -142,61 +153,63 @@ public class LoginActivity extends AppCompatActivity implements MyEventListener{
                     reader = new BufferedReader(new InputStreamReader(stream));
                     Log.e("status", "6");
                     reader.read();
-                    Log.e("status", "6");
+                    Log.e("status", "7");
                     StringBuffer buffer = new StringBuffer();
-                    Log.e("status", "6");
+                    Log.e("status", "8");
                     String line;
 
                     while ((line = reader.readLine()) != null) {
                         buffer.append(line);
                     }
-                    Log.e("status", "6");
+                    Log.e("status", "9");
                     reader.close();
-                    Log.e("status", "6");
+                    Log.e("status", "10");
 
                     String answer = buffer.toString();
-                    Log.e("answer",answer);
-                    Log.e("status", "7");
-                    if(answer.equals("1")){//login success
+                    Log.e("answer", answer);
+                    Log.e("status", "11");
+                    if (answer.equals("-1")) {//id does not exist
+                        loginsuccess = -1;
+                    } else if (answer.equals("0")) {//id password not match
+                        loginsuccess = 0;
+                    } else if (answer.length() >=1) { //TODO:jsonobject가 올것임
+                        //login success
                         loginsuccess = 1;
-                    }else if(answer.equals("-1")){//id does not exist
-                        loginsuccess=-1;
-                    }else if(answer.equals("0")){//id password not match
-                        loginsuccess=0;
                     }
-                    Log.e("answer",answer);
+                    Log.e("answer", answer);
                     //answer = "{"+answer;
 
-                    return "";//buffer.toString();//서버로 부터 받은 값을 리턴해줌 아마 OK!!가 들어올것임
+                    return answer;//buffer.toString();//서버로 부터 받은 값을 리턴해줌 아마 OK!!가 들어올것임
 
-                } catch (MalformedURLException e){ //new URL() falied
+                } catch (MalformedURLException e) { //new URL() falied
                     e.printStackTrace();
-                    Log.e("malformed","");
+                    Log.e("malformed", "");
                 } catch (IOException e) { //openConnection() failed
                     e.printStackTrace();
-                    Log.e("IOException","");
+                    Log.e("IOException", "");
                 } finally {
-                    if(con != null){
+                    if (con != null) {
                         con.disconnect();
-                        Log.e("disconnect","");
+                        Log.e("disconnect", "");
                     }
                     try {
-                        if(reader != null){
+                        if (reader != null) {
                             reader.close();//버퍼를 닫아줌
-                            Log.e("reader close","");
+                            Log.e("reader close", "");
                         }
                     } catch (IOException e) {
                         e.printStackTrace();
-                        Log.e("IOException2","");
+                        Log.e("IOException2", "");
                     }
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                Log.e("Exception","");
+                Log.e("Exception", "");
             }
 
             return null;
         }
+
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -205,9 +218,35 @@ public class LoginActivity extends AppCompatActivity implements MyEventListener{
         @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
-            if(callback!=null){
-                callback.onEventCompleted();
+            if (callback != null) {
+                if (loginsuccess == 1) {
+                    /*
+                    try {
+                        JSONObject jsonObject = new JSONObject(result);
+                        JSONArray json = jsonObject.getJSONArray("contacts");
+                        //Log.e("json", "process");
+                        for (int i = 0; i < json.length(); i++) {
+                            Log.e("for", "error");
+                            JSONObject iter = json.getJSONObject(i);
+                            name = iter.getString("name");
+                            userid = iter.getString("id");
+                            phone = iter.getString("phone");
+                            storename = iter.getString("store");
+                            if(!storename.equals("")) ismanager=true;
+                        }
+                    } catch (JSONException e) {
+                        Log.e("json", "error");
+                        e.printStackTrace();
+                    }*/
+                }
+                    userid = id.getText().toString();
+                    phone = "d";
+                    ismanager = false;
+                    name = "heo";
+                    Log.e("callback", "eventcomplete");
+                    Log.e("loginsuccess", ""+loginsuccess);
+                    callback.onEventCompleted();
+                }
             }
         }
     }
-}

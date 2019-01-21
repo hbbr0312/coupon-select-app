@@ -1,20 +1,22 @@
 package com.example.user.proj4;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -28,18 +30,35 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import android.content.Intent;
+import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
+import android.widget.Toast;
 
-/**관리자 메뉴*/
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
+
+/**관리자 메뉴*///TODO:매장 매니저가 로그인해야 됨
 public class PostcouponActivity extends AppCompatActivity implements MyEventListener{
-    public String store ="kaist";//TODO:매장 매니저가 로그인하면 입력한 매장이름 받아오기
-    public String userid="hbbr"; //TODO:QR code 인식해서 여기에 저장
-    public String change;
-    public String code; //1:사용, 0:적립
+    public String store ="twosome";//TODO:매장 매니저가 로그인하면 입력한 매장이름 받아오기
+    public String userid;
+    public String change="0";
+    public String code="0"; //1:사용, 0:적립
+
+    public String color="#af120a"; //TODO:couon setting할때 입력한 색깔 가져오기
+    public Bitmap logo; //TODO:couon setting할때 입력한 logo 가져오기
+
+    private String userpoint;
+    private LinearLayout coupon;
 
     private TextView comment;
     private TextView viewid;
     private TextView viewpoint;
     private TextView storename;
+    private ImageView storelogo;
 
     private EditText pointnum;
     private EditText usenum;
@@ -53,21 +72,36 @@ public class PostcouponActivity extends AppCompatActivity implements MyEventList
     private boolean validedit=true; //포인트입력란에 숫자입력했는지
     private boolean usevalidedit=true; //사용입력란에 숫자입력했는지
 
+    // QR code scanner object.
+    private IntentIntegrator qrScan;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.post_coupon);
 
+        // Initializing scan object.
+        qrScan = new IntentIntegrator(this);
+
         comment = (TextView) findViewById(R.id.comment1); //warning comment
+
+        /**user coupon*/
         storename = (TextView) findViewById(R.id.storename); //storename
+        storename.setText(store);
         scan = (Button) findViewById(R.id.gotoscan);
         scan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent goscan = new Intent(PostcouponActivity.this, ScanActivity.class);
-                startActivity(goscan);
+                qrScan.setPrompt("Scanning...");
+                qrScan.initiateScan();
             }
         });
+        coupon = findViewById(R.id.stcoupon);
+        coupon.setBackgroundColor(Color.parseColor(color));
+        logo=BitmapFactory.decodeResource(getResources(), R.drawable.two); //TODO:logo받아서
+        storelogo = findViewById(R.id.storelogo);
+        storelogo.setImageBitmap(logo);
+
 
         /**user information*/
         viewid = (TextView) findViewById(R.id.viewid);
@@ -181,6 +215,21 @@ public class PostcouponActivity extends AppCompatActivity implements MyEventList
         });
     }
 
+    // Get the scan results.
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data){
+        IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+        if (result != null){
+            // If there's a QR code.
+            if (result.getContents() != null){
+                userid = result.getContents();
+                startEvent();
+            }
+        }else{
+            super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
     //+ - 버튼으로 숫자 증감
     public void changeEdit(EditText edit, boolean isDec){
         int master = Integer.parseInt(edit.getText().toString());
@@ -201,15 +250,16 @@ public class PostcouponActivity extends AppCompatActivity implements MyEventList
         return true;
     }
 
-    public void updateinfo(String id, String point){
-        viewid.setText("user id : "+id);
-        viewpoint.setText("point : "+point);
+    public void updateinfo(){
+        viewid.setText("user id : "+userid);
+        viewpoint.setText("point : "+userpoint);
     }
     public void startEvent(){
         new POSTing(this).execute("http://socrip4.kaist.ac.kr:3980/postcouponinfo");
     }
     @Override
     public void onEventCompleted(){
+        updateinfo();
         Log.e("event","completed");
     }
 
@@ -327,22 +377,22 @@ public class PostcouponActivity extends AppCompatActivity implements MyEventList
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
             if(callback!=null){
+                try {
+                    JSONObject iter = new JSONObject(result);
+                    userid=iter.getString("id");
+                    userpoint = iter.getString("num_coupon");
+                    Log.e("userid",userid);
+                    Log.e("num_coupon",userpoint);
+                    //String mobile = iter.getString("mobile");
+                    //String img = iter.getString("img");
+
+                } catch (JSONException e) {
+                    Log.e("json", "error");
+                    e.printStackTrace();
+                }
                 callback.onEventCompleted();
             }
-            try {
-                JSONObject iter = new JSONObject(result);
-                updateinfo(iter.getString("id"),iter.getString("num_coupon"));
-                Log.e("id",iter.getString("id"));
-                Log.e("num_coupon",iter.getString("num_coupon"));
-                //String mobile = iter.getString("mobile");
-                //String img = iter.getString("img");
 
-
-
-            } catch (JSONException e) {
-                Log.e("json", "error");
-                e.printStackTrace();
-            }
         }
     }
 }

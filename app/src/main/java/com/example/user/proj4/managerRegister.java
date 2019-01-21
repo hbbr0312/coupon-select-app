@@ -202,8 +202,9 @@ public class managerRegister extends AppCompatActivity implements MyEventListene
         }
         if(index==2){
             Toast.makeText(managerRegister.this,"회원가입이 완료되었습니다.",Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(getApplicationContext(), MainActivity.class); //TODO: login 화면으로
-            MainActivity.ismanager=true;
+            Intent intent = new Intent(getApplicationContext(), couponsettingActivity.class);
+            intent.putExtra("register",true);
+            MainActivity.ismanager=true; //TODO: manager로 로그인했을때로 옮기기
             startActivity(intent);
         }
 

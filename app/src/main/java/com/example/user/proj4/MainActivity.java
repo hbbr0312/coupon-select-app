@@ -1,11 +1,17 @@
 package com.example.user.proj4;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -21,21 +27,41 @@ import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     public static boolean login=false;
-    public static boolean ismanager = false;
+    public static boolean ismanager = true;///TODO:false로
+
+    public static String storename="";
     public static String userid;
     public static String name;
     public static String phone;
-    private ImageView qrcode;
+
+    public static Session session;
+    private HashMap<String,String> info;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,14 +85,10 @@ public class MainActivity extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-
-
-        ListView lv = (ListView) findViewById(R.id.ListView);
-
+        session = new Session(MainActivity.this);
 
 
     }
@@ -78,43 +100,35 @@ public class MainActivity extends AppCompatActivity
         Log.e("main","onstart");
         Log.e("main public login",""+login);
         Log.e("main public ismanager",""+ismanager);
-        //login 했을때 //TODO:user정보를 nav_header_main에 setText(), login menu사라지고 logout? , user id로 qrcode생성
-        if(login){
-            qrcode = (ImageView) findViewById(R.id.qrcode);
-            Bitmap bitmap = generateQRCode("test1"); //userid로 바꾸기
-            qrcode.setImageBitmap(bitmap);
+        //처음 login 했을때 //TODO:user정보를 nav_header_main에 setText(), login menu사라지고 logout?
+        info = session.getInfo();
+        if(!login){
+            if(info.get("id").length()>0){ //login을 했었다는것 //TODO:로그아웃누르면 session.setInfo("",...)
+
+                /*if(info.get("ismanger").equals("true")){
+                    ismanager = true;
+                }*/
+                login = true;
+            }else {
+                Log.e("onstart","login false");
+                return;
+            }
         }
         //manager일때 //TODO:관리자 탭보이도록 일반유저면 안보이게
         if(ismanager){
-
+            storename = info.get("storename");
         }
+        userid = info.get("id");
+        phone = info.get("phone");
+        name = info.get("name");
 
-        //listview
-    }
-    public static Bitmap generateQRCode(String contents) {
-        Bitmap bitmap = null;
 
-        try {
-            QRCodeWriter qrCodeWriter = new QRCodeWriter();
-            bitmap = toBitmap(qrCodeWriter.encode(contents, BarcodeFormat.QR_CODE, 200, 200));
-        } catch (WriterException e) {
-            e.printStackTrace();
-        }
 
-        return bitmap;
+
     }
 
-    private static Bitmap toBitmap(BitMatrix matrix){
-        int height = matrix.getHeight();
-        int width = matrix.getWidth();
-        Bitmap bmp = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
-        for (int x = 0; x < width; x++){
-            for (int y = 0; y < height; y++){
-                bmp.setPixel(x, y, matrix.get(x, y) ? Color.BLACK : Color.WHITE);
-            }
-        }
-        return bmp;
-    }
+
+
 
     @Override
     public void onBackPressed() {
@@ -164,6 +178,21 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    public boolean permission(boolean needmanage){
+        Log.e("permission","login : "+login);
+        if(login) {
+            if(needmanage) {
+                if(!ismanager) Toast.makeText(MainActivity.this,"가게 매니저 권한이 필요합니다.",Toast.LENGTH_SHORT).show();
+                return ismanager;
+            }
+            else return true;
+
+        }
+        else {
+            Toast.makeText(MainActivity.this,"login이 필요합니다.",Toast.LENGTH_SHORT).show();
+            return false;
+        }
+    }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -185,26 +214,41 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
         if(id == R.id.nav_login){
+            if(login){
+                Toast.makeText(MainActivity.this,"logout되었습니다",Toast.LENGTH_SHORT).show();
+                session.logout();
+            }
             Intent intent1 = new Intent(MainActivity.this,LoginActivity.class);
             startActivity(intent1);
+            login=!login;
         }
         else if (id == R.id.nav_camera) {
             // Handle the camera action
         } else if (id == R.id.nav_gallery) {
-
+            if(permission(false)){
+                Intent intent0 = new Intent(MainActivity.this,couponsActivity.class);
+                startActivity(intent0);
+            }
         } else if (id == R.id.nav_slideshow) {
 
         } else if (id == R.id.nav_manage) {
-            Intent intent = new Intent(MainActivity.this,PostcouponActivity.class);
-            startActivity(intent);
+            if(permission(true)){
+                Intent intent = new Intent(MainActivity.this,PostcouponActivity.class);
+                startActivity(intent);
+            }
         } else if (id == R.id.nav_share) {
 
         } else if (id == R.id.nav_send) {
-
+            if(permission(true)){
+                Intent intent2 = new Intent(MainActivity.this,couponsettingActivity.class);
+                startActivity(intent2);
+            }
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
 }
+
