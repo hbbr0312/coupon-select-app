@@ -43,7 +43,7 @@ import com.google.zxing.integration.android.IntentResult;
 
 /**관리자 메뉴*/
 public class PostcouponActivity extends AppCompatActivity implements MyEventListener{
-    public String store ="kaist";//TODO:매장 매니저가 로그인하면 입력한 매장이름 받아오기
+    public static String store; //="kaist";//TODO:매장 매니저가 로그인하면 입력한 매장이름 받아오기
     public String userid;
     public String change="0";
     public String code="0"; //1:사용, 0:적립
@@ -82,6 +82,8 @@ public class PostcouponActivity extends AppCompatActivity implements MyEventList
 
         // Initializing scan object.
         qrScan = new IntentIntegrator(this);
+        if(store==null) Log.e("STORE NAME is null","...");
+        else Log.e("STORE NAME",store);
 
         comment = (TextView) findViewById(R.id.comment1); //warning comment
 
@@ -255,11 +257,11 @@ public class PostcouponActivity extends AppCompatActivity implements MyEventList
         viewpoint.setText("point : "+userpoint);
     }
     public void startEvent(){
-        new POSTing(this).execute("http://socrip4.kaist.ac.kr:3980/postcouponinfo");
+        new POSTing(this).execute("http://socrip4.kaist.ac.kr:3780/postcouponinfo");
     }
     @Override
     public void onEventCompleted(){
-        Toast.makeText(PostcouponActivity.this,"logout되었습니다",Toast.LENGTH_SHORT).show();
+        Toast.makeText(PostcouponActivity.this,"complete!",Toast.LENGTH_SHORT).show();
         updateinfo();
         Log.e("event","completed");
     }
@@ -280,6 +282,7 @@ public class PostcouponActivity extends AppCompatActivity implements MyEventList
             try {
                 JSONObject jsonObject = new JSONObject();
                 jsonObject.accumulate("store",store);
+                Log.e("post store name",store);
                 jsonObject.accumulate("id",userid);
                 jsonObject.accumulate("change",change);
                 jsonObject.accumulate("code",code);

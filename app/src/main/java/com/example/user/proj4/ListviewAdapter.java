@@ -1,6 +1,8 @@
 package com.example.user.proj4;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -52,6 +54,19 @@ public class ListviewAdapter extends BaseAdapter {
         /**color*/
         LinearLayout item = (LinearLayout) convertView.findViewById(R.id.item);
         item.setBackgroundColor(Color.parseColor(listviewitem.getColor()));
+        /**stamp*/
+        int stamp = (int) listviewitem.getPoint();
+        int coupon = stamp / 10; //완성된 쿠폰 개수
+        int remain = stamp - (coupon * 10); //미완성 쿠폰의 스탬프 개수
+
+        Bitmap check = BitmapFactory.decodeResource(convertView.getResources(), R.drawable.check);
+
+        int[] btns = {R.id.stamp1, R.id.stamp2, R.id.stamp3, R.id.stamp4,R.id.stamp5,R.id.stamp6,R.id.stamp7,R.id.stamp8,R.id.stamp9,R.id.stamp10};
+
+        for(int i = 0; i < remain; i++) {
+            ImageView imageView = convertView.findViewById(btns[i]);
+            imageView.setImageBitmap(check);
+        }
 
         return convertView;
     }

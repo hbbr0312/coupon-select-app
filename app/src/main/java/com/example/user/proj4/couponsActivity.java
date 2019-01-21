@@ -36,7 +36,7 @@ public class couponsActivity extends AppCompatActivity implements MyEventListene
     private ArrayList<Listviewitem> data;
     private ListView lv;
     private ImageView qrcode;
-    private String id;
+    private String id ="test";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,7 +55,7 @@ public class couponsActivity extends AppCompatActivity implements MyEventListene
         Toast.makeText(couponsActivity.this, "login "+MainActivity.login, Toast.LENGTH_SHORT).show();
         if(MainActivity.login){
             //listview
-            new GETing(this).execute("http://socrip4.kaist.ac.kr:3980/getcouponinfo?id="+id);
+            new GETing(this).execute("http://socrip4.kaist.ac.kr:3780/getcouponinfo?id="+id);
 
             //qr code생성
             qrcode = (ImageView) findViewById(R.id.qrcode);
@@ -143,7 +143,7 @@ public class couponsActivity extends AppCompatActivity implements MyEventListene
                         buffer.append(line);
                     }
                     get = buffer.toString();
-                    Log.e("server send message",get);
+                    Log.e("server send message","'"+get+"'");
 
                     return get;//서버로 부터 받은 값을 리턴해줌 아마 OK!!가 들어올것임
 
@@ -174,6 +174,10 @@ public class couponsActivity extends AppCompatActivity implements MyEventListene
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
             if(callback!=null){
+                if(result==null){
+                    callback.onEventCompleted();
+                    return;
+                }
                 try {
                     JSONArray json = new JSONArray(result);
                     for (int i = 0; i < json.length(); i++) {

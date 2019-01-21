@@ -55,6 +55,7 @@ public class managerRegister extends AppCompatActivity implements MyEventListene
 
     private int index; //1:duplication check, 2:register
     private boolean valid = false;
+    private boolean isCheck;
 
 
     @Override
@@ -77,13 +78,16 @@ public class managerRegister extends AppCompatActivity implements MyEventListene
         ArrayList<String> storelist = new ArrayList<String>();
         storelist.add("twosomeplace");
         codematch.put("twosomeplace","AAA");
-        /*storelist[0] = "twosomeplace";
-        storelist[1] = "lotteria";
-        storelist[2] = "droptop";
-        storelist[3] = "ogada";
-        storelist[4] = "mangosix";
-        storelist[5] = "subway";
-        storelist[6] = "dunkindounuts";*/
+        storelist.add("lotteria");
+        codematch.put("lotteria","AAA");
+        storelist.add("droptop");
+        codematch.put("droptop","AAA");
+        storelist.add("mangosix");
+        codematch.put("mangosix","AAA");
+        storelist.add("dunkin");
+        codematch.put("dunkin","AAA");
+
+
 
         ArrayAdapter spinnerAdapter;
         spinnerAdapter = new ArrayAdapter(this, R.layout.support_simple_spinner_dropdown_item, storelist);
@@ -143,10 +147,29 @@ public class managerRegister extends AppCompatActivity implements MyEventListene
         }); //phone number 숫자만만
         editPw.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD); //password ***
 
+        editPw.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                // 입력되는 텍스트에 변화가 있을 때
+            }
+
+            @Override
+            public void afterTextChanged(Editable arg0) {
+                // 입력이 끝났을 때
+                if(editPw.getText().toString().length()<4){
+                    comment.setText("password는 4자리 이상이어야 합니다");
+                }else comment.setText("");
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                // 입력하기 전에
+            }
+        }); //pwd 4자리 이상
         duplecheck.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                index=1;
+                isCheck=true;
                 if(editId.getText().toString().matches("")){
                     Toast.makeText(managerRegister.this,"id입력...",Toast.LENGTH_SHORT).show();
                 }
@@ -156,13 +179,12 @@ public class managerRegister extends AppCompatActivity implements MyEventListene
         register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                index=2;
                 Log.e("valid num",valid+"");
                 Log.e("valid Id",validId);
                 Log.e("editText",editId.getText().toString());
-
+                isCheck=false;
                 if(valid && validId.equals(editId.getText().toString())){
-                    if(isManager()) startEvent();
+                    if(isManager() &&canregister()) startEvent();
                     else Toast.makeText(managerRegister.this,"code가 맞지않습니다.",Toast.LENGTH_SHORT).show();
                 }
                 else Toast.makeText(managerRegister.this,"id 중복확인을 해주세요",Toast.LENGTH_SHORT).show();
@@ -183,28 +205,44 @@ public class managerRegister extends AppCompatActivity implements MyEventListene
     //store와 code가 맞는지 확인
     public boolean isManager(){
         code = editCode.getText().toString();
-        if(!codematch.get(store).equals(code)) return true;
+        if(codematch.get(store).equals(code)) return true;
         return false;
     }
 
+    public boolean canregister(){
+        //일단 id, pwd 4자리 이상
+        if(leng(editId)>=4 && leng(editName)>=1 && leng(editPhone)>=1 && leng(editPw)>=4)
+            return true;
+        return false;
+    }
+    public int leng(EditText et){
+        return et.getText().toString().length();
+    }
+
     public void startEvent(){
-        if(index==1) new GETing(this).execute("http://socrip4.kaist.ac.kr:3780/getidvalidity?id="+editId.getText().toString());
-        else if(index==2) {
-            isManager();
+        //id 중복체크
+        if(isCheck){
+            Log.e("manager","duple check start");
+            new GETing(this).execute("http://socrip4.kaist.ac.kr:3780/getidvalidity?id="+editId.getText().toString());
+        }
+        //회원가입
+        else{
+            //isManager();
+            Log.e("manager","register start");
             new POSTing(this).execute("http://socrip4.kaist.ac.kr:3780/postmember");
         }
     }
     @Override
     public void onEventCompleted(){
-        if(index==1){
+        if(isCheck){
             if(valid) Toast.makeText(managerRegister.this,"사용가능한 id입니다.",Toast.LENGTH_SHORT).show();
             else Toast.makeText(managerRegister.this,"이미 사용중인 id입니다.",Toast.LENGTH_SHORT).show();
         }
-        if(index==2){
+        else{
             Toast.makeText(managerRegister.this,"회원가입이 완료되었습니다.",Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(getApplicationContext(), couponsettingActivity.class);
+            couponsettingActivity.firststorename=store;
             intent.putExtra("register",true);
-            MainActivity.ismanager=true; //TODO: manager로 로그인했을때로 옮기기
             startActivity(intent);
         }
 
@@ -260,12 +298,14 @@ public class managerRegister extends AppCompatActivity implements MyEventListene
                     if(get.equals(" 1")) {
                         valid = true;
                         validId = editId.getText().toString();
-                        return "";
+                        Log.e("valid","true");
+                        return get;
                     }else if(get.equals(" 0")){
                         valid = false;
+                        Log.e("valid","false");
                     }
                     Log.e("result",get);
-                    return buffer.toString();//서버로 부터 받은 값을 리턴해줌 아마 OK!!가 들어올것임
+                    return get;
 
                 } catch (MalformedURLException e){
                     e.printStackTrace();

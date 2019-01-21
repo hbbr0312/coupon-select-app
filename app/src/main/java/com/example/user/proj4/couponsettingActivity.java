@@ -47,7 +47,9 @@ public class couponsettingActivity extends AppCompatActivity implements MyEventL
     //현재값
     public String storecolor = "#9e0000"; //지울거
     public Bitmap storelogo;
-    public String storename = "twosome"; //바뀌지 않는값
+    public String storename;// = "twosome"; //바뀌지 않는값
+
+    public static String firststorename;
 
     //sample값
     private String samplecolor;
@@ -58,6 +60,7 @@ public class couponsettingActivity extends AppCompatActivity implements MyEventL
 
     private ImageView logo;
     private LinearLayout linear;
+    private TextView stname;
 
     private int PICK_IMAGE_REQUEST = 1;
 
@@ -73,6 +76,12 @@ public class couponsettingActivity extends AppCompatActivity implements MyEventL
         samplecolor=storecolor;
         samplelogo=storelogo;
         linear = findViewById(R.id.samplecoupon);
+
+        if(PostcouponActivity.store==null) storename = firststorename;
+        else storename=PostcouponActivity.store;
+        Log.e("STORENAME","in setting..." +storename);
+        stname =findViewById(R.id.storename);
+        stname.setText(storename);
 
         /**LOAD LOGO : 갤러리에서 사진불러와서 sample로 보여주기*/
         logo = findViewById(R.id.samplelogo);
@@ -165,7 +174,7 @@ public class couponsettingActivity extends AppCompatActivity implements MyEventL
         storelogo = samplelogo;
 
         encoding();
-        new POSTing(this).execute("http://socrip4.kaist.ac.kr:3980/poststoreinfo"); //TODO:url값
+        new POSTing(this).execute("http://socrip4.kaist.ac.kr:3780/poststoreinfo"); //TODO:url값
     }
 
     @Override
@@ -173,6 +182,7 @@ public class couponsettingActivity extends AppCompatActivity implements MyEventL
         Toast.makeText(couponsettingActivity.this,"Coupon 설정이 변경되었습니다",Toast.LENGTH_SHORT).show();
         PostcouponActivity.color = storecolor;
         PostcouponActivity.logo = storelogo;
+        //PostcouponActivity.store = storename;
 
         if(getIntent().getBooleanExtra("register",false)){
             //관리자가 회원가입했을때 쿠폰설정하고 로그인 페이지로 돌아가도록

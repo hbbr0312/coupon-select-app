@@ -42,6 +42,8 @@ public class LoginActivity extends AppCompatActivity implements MyEventListener 
     private String userid;
     private boolean ismanager = false;
 
+    private String response;
+
     private int loginsuccess = 2; //1:success , 0:not match ,-1:id does not exist
 
     @Override
@@ -78,7 +80,7 @@ public class LoginActivity extends AppCompatActivity implements MyEventListener 
     }
 
     public void startEvent() {
-        new POSTing(this).execute("http://socrip4.kaist.ac.kr:3980/postlogin");
+        new POSTing(this).execute("http://socrip4.kaist.ac.kr:3780/postlogin");
     }
 
     @Override
@@ -87,8 +89,28 @@ public class LoginActivity extends AppCompatActivity implements MyEventListener 
             Log.e("Login", "success!!");
             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
             MainActivity.login = true;
+            if (loginsuccess == 1) {
+
+                try {
+                    JSONObject iter = new JSONObject(response);
+                    name = iter.getString("name");
+                    userid = iter.getString("id");
+                    phone = iter.getString("phone");
+                    storename = iter.getString("store");
+
+                } catch (JSONException e) {
+                    Log.e("json", "error");
+                    e.printStackTrace();
+                }
+            }
             //TODO: Main에서 id,name,phone,ismanager,(storename)지정
             MainActivity.session.setInfo(userid, name, phone, ismanager, storename);
+            if(!storename.equals("")) {
+                ismanager=true;
+                MainActivity.ismanager=true;
+                PostcouponActivity.store=storename;
+            }
+
             startActivity(intent);
         } else if (loginsuccess == -1) Log.e("Login", "존재하지않는 id ");
         else if (loginsuccess == 0) Log.e("Login", "incorrect password");
@@ -219,22 +241,8 @@ public class LoginActivity extends AppCompatActivity implements MyEventListener 
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
             if (callback != null) {
-                if (loginsuccess == 1) {
+                response = result;
 
-                    try {
-                        JSONObject iter = new JSONObject(result);
-                        name = iter.getString("name");
-                        userid = iter.getString("id");
-                        phone = iter.getString("phone");
-                        storename = iter.getString("store");
-                        if(!storename.equals("")) ismanager=true;
-
-
-                    } catch (JSONException e) {
-                        Log.e("json", "error");
-                        e.printStackTrace();
-                    }
-                }
 
                     Log.e("callback", "eventcomplete");
                     Log.e("loginsuccess", ""+loginsuccess);

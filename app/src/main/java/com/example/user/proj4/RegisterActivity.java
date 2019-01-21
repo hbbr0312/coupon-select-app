@@ -85,6 +85,25 @@ public class RegisterActivity extends AppCompatActivity implements MyEventListen
                 // 입력하기 전에
             }
         }); //id 4자리 이상
+        editPw.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                // 입력되는 텍스트에 변화가 있을 때
+            }
+
+            @Override
+            public void afterTextChanged(Editable arg0) {
+                // 입력이 끝났을 때
+                if(editPw.getText().toString().length()<4){
+                    comment.setText("password는 4자리 이상이어야 합니다");
+                }else comment.setText("");
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                // 입력하기 전에
+            }
+        }); //pwd 4자리 이상
         editPhone.addTextChangedListener(new TextWatcher() {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -143,11 +162,24 @@ public class RegisterActivity extends AppCompatActivity implements MyEventListen
         return true;
     }
 
+    public boolean canregister(){
+        //일단 id, pwd 4자리 이상
+        if(leng(editId)>=4 && leng(editName)>=1 && leng(editPhone)>=1 && leng(editPw)>=4)
+            return true;
+        return false;
+    }
+    public int leng(EditText et){
+        return et.getText().toString().length();
+    }
+
 
     public void startEvent(){
-        if(index==1) new GETing(this).execute("http://socrip4.kaist.ac.kr:3980/getidvalidity?id="+editId.getText().toString());
+        if(index==1) new GETing(this).execute("http://socrip4.kaist.ac.kr:3780/getidvalidity?id="+editId.getText().toString());
         else if(index==2) {
-            new POSTing(this).execute("http://socrip4.kaist.ac.kr:3980/postmember");
+            if(canregister()) new POSTing(this).execute("http://socrip4.kaist.ac.kr:3780/postmember");
+            else{
+                Toast.makeText(RegisterActivity.this,"필수정보를 모두 채워주세요.",Toast.LENGTH_SHORT).show();
+            }
         }
     }
     @Override
@@ -158,7 +190,7 @@ public class RegisterActivity extends AppCompatActivity implements MyEventListen
         }
         if(index==2){
             Toast.makeText(RegisterActivity.this,"회원가입이 완료되었습니다.",Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(getApplicationContext(), LoginActivity.class); //TODO: login 화면으로
+            Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
             startActivity(intent);
         }
 
@@ -170,6 +202,7 @@ public class RegisterActivity extends AppCompatActivity implements MyEventListen
     }
 
 
+    //아이디 중복체크
     public class GETing extends AsyncTask<String, String, String> {
         public String get;
         private MyEventListener callback;
@@ -252,6 +285,8 @@ public class RegisterActivity extends AppCompatActivity implements MyEventListen
             }
         }
     }
+
+    //회원가입
     public class POSTing extends AsyncTask<String, String, String> {
         private MyEventListener callback;
         public POSTing(MyEventListener my){
@@ -266,7 +301,7 @@ public class RegisterActivity extends AppCompatActivity implements MyEventListen
                 jsonObject.accumulate("password",editPw.getText().toString());
                 jsonObject.accumulate("name",editName.getText().toString());
                 jsonObject.accumulate("phone",editPhone.getText().toString());
-                jsonObject.accumulate("store","");
+                jsonObject.accumulate("store",""); //일반회원이기때문
 
                 HttpURLConnection con = null;
                 BufferedReader reader = null;
