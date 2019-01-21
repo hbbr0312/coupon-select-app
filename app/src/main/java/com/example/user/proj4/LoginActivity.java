@@ -220,24 +220,20 @@ public class LoginActivity extends AppCompatActivity implements MyEventListener 
             super.onPostExecute(result);
             if (callback != null) {
                 if (loginsuccess == 1) {
-                    /*
+
                     try {
-                        JSONObject jsonObject = new JSONObject(result);
-                        JSONArray json = jsonObject.getJSONArray("contacts");
-                        //Log.e("json", "process");
-                        for (int i = 0; i < json.length(); i++) {
-                            Log.e("for", "error");
-                            JSONObject iter = json.getJSONObject(i);
-                            name = iter.getString("name");
-                            userid = iter.getString("id");
-                            phone = iter.getString("phone");
-                            storename = iter.getString("store");
-                            if(!storename.equals("")) ismanager=true;
-                        }
+                        JSONObject iter = new JSONObject(result);
+                        name = iter.getString("name");
+                        userid = iter.getString("id");
+                        phone = iter.getString("phone");
+                        storename = iter.getString("store");
+                        if(!storename.equals("")) ismanager=true;
+
+
                     } catch (JSONException e) {
                         Log.e("json", "error");
                         e.printStackTrace();
-                    }*/
+                    }
                 }
                     userid = id.getText().toString();
                     phone = "d";

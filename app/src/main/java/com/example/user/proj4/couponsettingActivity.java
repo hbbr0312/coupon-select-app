@@ -135,7 +135,7 @@ public class couponsettingActivity extends AppCompatActivity implements MyEventL
     /**logo image encoding*/
     public String encoding() {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        storelogo.compress(Bitmap.CompressFormat.JPEG, 40, baos);
+        storelogo.compress(Bitmap.CompressFormat.PNG, 40, baos);
         byte[] b = baos.toByteArray();
         return Base64.encodeToString(b, Base64.DEFAULT);
     }
@@ -171,6 +171,9 @@ public class couponsettingActivity extends AppCompatActivity implements MyEventL
     @Override
     public void onEventCompleted(){
         Toast.makeText(couponsettingActivity.this,"Coupon 설정이 변경되었습니다",Toast.LENGTH_SHORT).show();
+        PostcouponActivity.color = storecolor;
+        PostcouponActivity.logo = storelogo;
+
         if(getIntent().getBooleanExtra("register",false)){
             //관리자가 회원가입했을때 쿠폰설정하고 로그인 페이지로 돌아가도록
             Intent intent = new Intent(getApplicationContext(), LoginActivity.class);

@@ -45,7 +45,7 @@ public class ListviewAdapter extends BaseAdapter {
         name.setText(listviewitem.getName());
         /**point*/
         TextView point=(TextView)convertView.findViewById(R.id.stpoint);
-        point.setText(""+listviewitem.getPoint());
+        point.setText("point : "+listviewitem.getPoint());
         /**logo*/
         ImageView logo=(ImageView)convertView.findViewById(R.id.stlogo);
         logo.setImageBitmap(listviewitem.getLogo()); //기본 카카오이미지로 아이콘

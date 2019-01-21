@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Base64;
 import android.util.Log;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -16,10 +17,12 @@ import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -172,52 +175,27 @@ public class couponsActivity extends AppCompatActivity implements MyEventListene
             super.onPostExecute(result);
             if(callback!=null){
                 try {
-                    int in = result.indexOf("},");
-                    String result1 = result.substring(in+2);
-                    result = result.substring(0,in+1);
-
-                    Log.e("jsonparsing",result);
-                    Log.e("jsonparsing",result1);
-                    JSONObject jsonObject = new JSONObject(result);
-                    //JSONArray json = jsonObject.getJSONArray("coupon");
-                    Log.e("json", "process");
-                    String storename = jsonObject.getString("store");
-                    String stpoint = jsonObject.getString("num_coupon");
-                    Log.e("storename", storename);
-                    Log.e("point", stpoint);
-                    int point = Integer.parseInt(stpoint);
-
-                    Listviewitem item = new Listviewitem(storename,point,"#b21818",BitmapFactory.decodeResource(getResources(), R.drawable.kakao));//TODO:이게 진짜 new Listviewitem(storename,point,color,logobit);
-                    data.add(item);
-
-                    Log.e("data size",""+data.size());
-
-                    jsonObject = new JSONObject(result1);
-                    storename = jsonObject.getString("store");
-                    stpoint = jsonObject.getString("num_coupon");
-                    Log.e("storename", storename);
-                    Log.e("point", stpoint);
-                    point = Integer.parseInt(stpoint);
-                    item = new Listviewitem(storename,point,"#7e15bf",BitmapFactory.decodeResource(getResources(), R.drawable.kakao));
-                    data.add(item);
-                    Log.e("data size",""+data.size());
-                    /*
+                    JSONArray json = new JSONArray(result);
                     for (int i = 0; i < json.length(); i++) {
                         Log.e("jason", ""+i);
                         JSONObject iter = json.getJSONObject(i);
-                        String storename = iter.getString("storename");
+                        String storename = iter.getString("store");
                         String stpoint = iter.getString("num_coupon");
                         String color = iter.getString("color");
                         String logo = iter.getString("logo");
 
+                        /**convert to proper shape*/
                         int point = Integer.parseInt(stpoint);
+                        Bitmap logobit = decodeBase64(logo);
+                        /*
                         byte[] bytedata1 = Base64.decode(logo,0);
                         ByteArrayInputStream inStream1 = new ByteArrayInputStream(bytedata1);
                         Bitmap logobit = BitmapFactory.decodeStream(inStream1);
+                        */
 
-                        Listviewitem item = new Listviewitem(storename,point);//TODO:이게 진짜 new Listviewitem(storename,point,color,logobit);
+                        Listviewitem item = new Listviewitem(storename,point,color,logobit);
                         data.add(item);
-                    }*/
+                    }
 
                 } catch (JSONException e) {
                     Log.e("json", "error");
@@ -227,6 +205,12 @@ public class couponsActivity extends AppCompatActivity implements MyEventListene
                 callback.onEventCompleted();
             }
         }
+    }
+
+    public static Bitmap decodeBase64(String input)
+    {
+        byte[] decodedByte = Base64.decode(input, 0);
+        return BitmapFactory.decodeByteArray(decodedByte, 0, decodedByte.length);
     }
 
 }

@@ -41,15 +41,15 @@ import android.widget.Toast;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
-/**관리자 메뉴*///TODO:매장 매니저가 로그인해야 됨
+/**관리자 메뉴*/
 public class PostcouponActivity extends AppCompatActivity implements MyEventListener{
-    public String store ="twosome";//TODO:매장 매니저가 로그인하면 입력한 매장이름 받아오기
+    public String store ="kaist";//TODO:매장 매니저가 로그인하면 입력한 매장이름 받아오기
     public String userid;
     public String change="0";
     public String code="0"; //1:사용, 0:적립
 
-    public String color="#af120a"; //TODO:couon setting할때 입력한 색깔 가져오기
-    public Bitmap logo; //TODO:couon setting할때 입력한 logo 가져오기
+    public static String color="#af120a"; //TODO:couon setting할때 입력한 색깔 가져오기
+    public static Bitmap logo; //TODO:couon setting할때 입력한 logo 가져오기
 
     private String userpoint;
     private LinearLayout coupon;
@@ -98,7 +98,7 @@ public class PostcouponActivity extends AppCompatActivity implements MyEventList
         });
         coupon = findViewById(R.id.stcoupon);
         coupon.setBackgroundColor(Color.parseColor(color));
-        logo=BitmapFactory.decodeResource(getResources(), R.drawable.two); //TODO:logo받아서
+        //logo=BitmapFactory.decodeResource(getResources(), R.drawable.two); //TODO:logo받아서
         storelogo = findViewById(R.id.storelogo);
         storelogo.setImageBitmap(logo);
 
@@ -259,6 +259,7 @@ public class PostcouponActivity extends AppCompatActivity implements MyEventList
     }
     @Override
     public void onEventCompleted(){
+        Toast.makeText(PostcouponActivity.this,"logout되었습니다",Toast.LENGTH_SHORT).show();
         updateinfo();
         Log.e("event","completed");
     }

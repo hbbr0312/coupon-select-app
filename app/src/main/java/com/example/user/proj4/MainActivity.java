@@ -239,7 +239,7 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_share) {
 
         } else if (id == R.id.nav_send) {
-            if(permission(true)){
+            if(true){ //permission(true)
                 Intent intent2 = new Intent(MainActivity.this,couponsettingActivity.class);
                 startActivity(intent2);
             }
