@@ -235,10 +235,7 @@ public class LoginActivity extends AppCompatActivity implements MyEventListener 
                         e.printStackTrace();
                     }
                 }
-                    userid = id.getText().toString();
-                    phone = "d";
-                    ismanager = false;
-                    name = "heo";
+
                     Log.e("callback", "eventcomplete");
                     Log.e("loginsuccess", ""+loginsuccess);
                     callback.onEventCompleted();
