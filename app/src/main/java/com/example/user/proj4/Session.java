@@ -21,11 +21,13 @@ public class Session {
         prefs.edit().putString("ismanager", "false").apply();
         prefs.edit().putString("storename", "").apply();
     }
-    public void setInfo(String id, String name, String phone, boolean ismanager, String storename){
+    public void setInfo(String id, String name, String phone, boolean ismanager, String storename, String logo, String color){
         prefs.edit().putString("id", id).apply();
         prefs.edit().putString("name", name).apply();
         prefs.edit().putString("phone", phone).apply();
         prefs.edit().putString("storename", storename).apply();
+        prefs.edit().putString("color",color).apply();
+        prefs.edit().putString("logo",logo).apply();
         if(ismanager) prefs.edit().putString("ismanager", "true").apply();
         else prefs.edit().putString("ismanager", "false").apply();
 
@@ -39,6 +41,8 @@ public class Session {
         map.put("ismanager", prefs.getString("ismanager", ""));
         if (prefs.getString("ismanager", "").equals("true")) {
             map.put("storename", prefs.getString("storename", ""));
+            map.put("color", prefs.getString("color", ""));
+            map.put("logo", prefs.getString("logo", ""));
         }
         return map;
     }

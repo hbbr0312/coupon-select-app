@@ -48,8 +48,8 @@ import static android.app.Activity.RESULT_OK;
 public class couponsettingFragment extends Fragment implements MyEventListener {
     private View view;
     //현재값
-    public String storecolor = "#9e0000"; //지울거
-    public Bitmap storelogo;
+    public static String storecolor = "#9e0000"; //지울거
+    public static Bitmap storelogo;
     public String storename;// = "twosome"; //바뀌지 않는값
 
     //sample값
@@ -77,7 +77,7 @@ public class couponsettingFragment extends Fragment implements MyEventListener {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.activity_coupons,container,false);
+        view = inflater.inflate(R.layout.activity_couponsetting,container,false);
 
         checkPermissionREAD_EXTERNAL_STORAGE(getContext());
 
@@ -87,7 +87,7 @@ public class couponsettingFragment extends Fragment implements MyEventListener {
         samplelogo=storelogo;
         linear = view.findViewById(R.id.samplecoupon);
 
-        storename=PostcouponActivity.store;
+        storename=MainActivity.storename;
         Log.e("STORENAME","in setting..." +storename);
         stname = view.findViewById(R.id.storename);
         stname.setText(storename);

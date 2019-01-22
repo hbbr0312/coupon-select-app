@@ -45,6 +45,9 @@ public class LoginFragment extends Fragment implements MyEventListener {
 
     private String response;
 
+    private String color ="";
+    private String logo="";
+
     private int loginsuccess = 2; //1:success , 0:not match ,-1:id does not exist
 
     public LoginFragment(){
@@ -99,12 +102,10 @@ public class LoginFragment extends Fragment implements MyEventListener {
 
     @Override
     public void onEventCompleted() {
+        Intent intent = new Intent(getContext(), MainActivity.class);
         if (loginsuccess == 1) {
             Log.e("Login", "success!!");
-            Intent intent = new Intent(getContext(), MainActivity.class);
             MainActivity.login = true;
-            if (loginsuccess == 1) {
-
                 try {
                     JSONObject iter = new JSONObject(response);
                     name = iter.getString("name");
@@ -116,30 +117,39 @@ public class LoginFragment extends Fragment implements MyEventListener {
                     Log.e("json", "error");
                     e.printStackTrace();
                 }
-            }
             if(!storename.equals("")) {
                 ismanager=true;
                 MainActivity.ismanager=true;
+                MainActivity.storename=storename;
                 PostcouponActivity.store=storename;
-                new GETing(this).execute();
+                new GETing(this).execute("http://socrip4.kaist.ac.kr:3780/getstoreinfo?storename="+storename);
+                return;
             }
-            MainActivity.session.setInfo(userid, name, phone, ismanager, storename);
-            startActivity(intent);
-        } else if (loginsuccess == -1) Log.e("Login", "존재하지않는 id ");
-        else if (loginsuccess == 0) Log.e("Login", "incorrect password");
+
+        } else if (loginsuccess == -1) {
+            Log.e("Login", "존재하지않는 id ");
+            Toast.makeText(getActivity(), "존재하지 않는 ID입니다.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        else if (loginsuccess == 0) {
+            Log.e("Login", "incorrect password");
+            Toast.makeText(getActivity(), "비밀번호가 맞지 않습니다.", Toast.LENGTH_SHORT).show();
+            return;
+        }
         else if (loginsuccess==3){
             try {
                 JSONObject iter = new JSONObject(response);
-                name = iter.getString("name");
-                userid = iter.getString("id");
-                phone = iter.getString("phone");
-                storename = iter.getString("store");
-
+                logo = iter.getString("logo");
+                color = iter.getString("color");
+                MainActivity.color = color;
+                MainActivity.logo = logo;
             } catch (JSONException e) {
                 Log.e("json", "error");
                 e.printStackTrace();
             }
         }
+        MainActivity.session.setInfo(userid, name, phone, ismanager, storename,logo,color);
+        startActivity(intent);
     }
 
 
@@ -348,6 +358,7 @@ public class LoginFragment extends Fragment implements MyEventListener {
             super.onPostExecute(result);
             if(callback!=null){
                 loginsuccess=3; // store color logo저장
+                response=result;
                 callback.onEventCompleted();
             }
         }

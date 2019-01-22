@@ -46,8 +46,8 @@ import java.net.URL;
 //manager가 처음에 회원가입할때만 띄우는 액티비티임
 public class couponsettingActivity extends AppCompatActivity implements MyEventListener {
     //현재값
-    public String storecolor = "#9e0000"; //지울거
-    public Bitmap storelogo;
+    public static String storecolor = "#9e0000"; //지울거
+    public static Bitmap storelogo;
     public String storename;// = "twosome"; //바뀌지 않는값
 
     public static String firststorename;
@@ -64,22 +64,22 @@ public class couponsettingActivity extends AppCompatActivity implements MyEventL
     private TextView stname;
 
     private int PICK_IMAGE_REQUEST = 1;
+    private String response;
+    private boolean getting=true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_couponsetting);
 
-        checkPermissionREAD_EXTERNAL_STORAGE(couponsettingActivity.this);
-
-        storelogo = BitmapFactory.decodeResource(getResources(), R.drawable.two); //지울거
-
-        samplecolor=storecolor;
-        samplelogo=storelogo;
-        linear = findViewById(R.id.samplecoupon);
-
         if(PostcouponActivity.store==null) storename = firststorename;
-        else storename=PostcouponActivity.store;
+        else storename=MainActivity.storename;
+
+        checkPermissionREAD_EXTERNAL_STORAGE(couponsettingActivity.this);
+        linear = findViewById(R.id.samplecoupon);
+        new GETing(this).execute("http://socrip4.kaist.ac.kr:3780/getstoreinfo?storename="+storename);
+
+
         Log.e("STORENAME","in setting..." +storename);
         stname =findViewById(R.id.storename);
         stname.setText(storename);
@@ -111,7 +111,7 @@ public class couponsettingActivity extends AppCompatActivity implements MyEventL
         });
 
         //update
-        updateview();
+        if(!getting)updateview();
     }
 
     /**update coupon view*/
@@ -172,23 +172,63 @@ public class couponsettingActivity extends AppCompatActivity implements MyEventL
     public void startEvent(){
         storecolor = samplecolor;
         storelogo = samplelogo;
-
         encoding();
         new POSTing(this).execute("http://socrip4.kaist.ac.kr:3780/poststoreinfo");
     }
 
     @Override
     public void onEventCompleted(){
-        Toast.makeText(couponsettingActivity.this,"Coupon 설정이 변경되었습니다",Toast.LENGTH_SHORT).show();
-        PostcouponActivity.color = storecolor;
-        PostcouponActivity.logo = storelogo;
 
-        //관리자가 회원가입했을때 쿠폰설정하고 로그인 페이지로 돌아가도록
-        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-        startActivity(intent);
+        if(getting){
+            try {
+                JSONObject iter = new JSONObject(response);
+                String logo = iter.getString("logo");
+                String color = iter.getString("color");
+                storecolor = color;
+                storelogo = decodeBase64(logo);
+                MainActivity.color = color;
+                MainActivity.logo = logo;
+                PostcouponActivity.color=color;
+                PostcouponActivity.logo=storelogo;
+                MainActivity.session.setInfo(MainActivity.userid, MainActivity.name, MainActivity.phone, MainActivity.ismanager, storename,logo,color);
+            } catch (JSONException e) {
+                Log.e("json", "error");
+                e.printStackTrace();
+            }
+            samplecolor=storecolor;
+            samplelogo=storelogo;
+            Log.e("store color",storecolor);
+            updateview();
+
+
+            getting=false;
+        }else{
+            Toast.makeText(couponsettingActivity.this,"Coupon 설정이 변경되었습니다",Toast.LENGTH_SHORT).show();
+            PostcouponActivity.color = storecolor;
+            PostcouponActivity.logo = storelogo;
+
+            MainActivity.logo=encoding();
+            MainActivity.color=storecolor;
+            //관리자가 회원가입했을때 쿠폰설정하고 로그인 페이지로 돌아가도록
+            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+            startActivity(intent);
+        }
+
+
+
     }
 
-    @Override
+
+
+
+    public static Bitmap decodeBase64(String input)
+        {
+        byte[] decodedByte = Base64.decode(input, 0);
+        return BitmapFactory.decodeByteArray(decodedByte, 0, decodedByte.length);
+        }
+
+
+@Override
     public void onEventFailed(){
         Log.e("event","failed");
     }
@@ -379,5 +419,82 @@ public class couponsettingActivity extends AppCompatActivity implements MyEventL
                 });
         AlertDialog alert = alertBuilder.create();
         alert.show();
+    }
+
+    public class GETing extends AsyncTask<String, String, String> {
+        public String get;
+        private MyEventListener callback;
+        public GETing(MyEventListener my){
+            callback = my;
+        }
+
+        @Override
+        protected String doInBackground(String... urls) {
+            try {
+
+                HttpURLConnection con = null;
+                BufferedReader reader = null;
+
+                try{
+                    URL url = new URL(urls[0]);
+                    //연결을 함
+                    con = (HttpURLConnection) url.openConnection();
+
+                    con.setRequestMethod("GET");//POST방식으로 보냄
+                    con.setRequestProperty("Cache-Control", "no-cache");//캐시 설정
+                    con.setRequestProperty("Content-Type", "application/json");//application JSON 형식으로 전송
+                    con.setRequestProperty("Accept", "text/html");//서버에 response 데이터를 html로 받음
+                    //con.setDoOutput(true);//Outstream으로 post 데이터를 넘겨주겠다는 의미
+                    con.setDoInput(true);//Inputstream으로 서버로부터 응답을 받겠다는 의미
+                    con.connect();
+                    Log.e("status",""+con.getResponseCode());
+
+                    //서버로 부터 데이터를 받음
+                    InputStream stream = con.getInputStream();
+
+                    reader = new BufferedReader(new InputStreamReader(stream));
+
+                    StringBuffer buffer = new StringBuffer();
+
+                    String line = "";
+                    while((line = reader.readLine()) != null){
+                        buffer.append(line);
+                    }
+                    get = buffer.toString();
+                    Log.e("result",get);
+                    return get;//서버로 부터 받은 값을 리턴해줌 아마 OK!!가 들어올것임
+
+                } catch (MalformedURLException e){
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } finally {
+                    if(con != null){
+                        con.disconnect();
+                    }
+                    try {
+                        if(reader != null){
+                            reader.close();//버퍼를 닫아줌
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+            if(callback!=null){
+                response=result;
+                getting=true;
+                callback.onEventCompleted();
+            }
+        }
     }
 }

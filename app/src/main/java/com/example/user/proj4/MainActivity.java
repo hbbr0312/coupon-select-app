@@ -63,6 +63,10 @@ public class MainActivity extends AppCompatActivity
     public static String name;
     public static String phone;
 
+    //store
+    public static String logo;
+    public static String color;
+
     public static Session session;
     private HashMap<String,String> info;
 
@@ -118,12 +122,10 @@ public class MainActivity extends AppCompatActivity
         info = session.getInfo();
         updateuserinfo();
         if(login){
-            if(ismanager){
-                //manager일때 //TODO:관리자 탭보이도록 일반유저면 안보이게
+            if(!ismanager){
+                hideItem();
             }
         }
-
-
     }
 
     //login하거나 logout할때 userid,phone,name 재설정해주고, 왼쪽 메뉴탭에도 적용
@@ -164,7 +166,19 @@ public class MainActivity extends AppCompatActivity
         if(info.get("ismanager").equals("true")) {
             ismanager=true;
             storename = info.get("storename");
+            color = info.get("color");
+            logo = info.get("logo");
+            PostcouponActivity.store=storename;
+            PostcouponActivity.color=color;
+            PostcouponActivity.logo=decodeBase64(logo);
+            couponsettingActivity.storecolor=color;
+            couponsettingActivity.storelogo=decodeBase64(logo);
         }
+    }
+    public static Bitmap decodeBase64(String input)
+    {
+        byte[] decodedByte = Base64.decode(input, 0);
+        return BitmapFactory.decodeByteArray(decodedByte, 0, decodedByte.length);
     }
 
 
@@ -253,6 +267,13 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
+    private void hideItem(){
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        Menu nav_menu = navigationView.getMenu();
+        nav_menu.findItem(R.id.nav_manage).setVisible(false);
+        nav_menu.findItem(R.id.nav_setting).setVisible(false);
+    }
+
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -279,11 +300,14 @@ public class MainActivity extends AppCompatActivity
         /**매장 쿠폰 디자인 설정*/
         else if (id == R.id.nav_setting) {
             if(permission(true)){
+                Intent intent = new Intent(MainActivity.this,couponsettingActivity.class);
+                startActivity(intent);
+                /*
                 couponsettingFragment cf = new couponsettingFragment();
                 fragmentManager = getSupportFragmentManager();
                 fragmentTransaction = fragmentManager.beginTransaction();
                 fragmentTransaction.replace(R.id.fragmentA,cf);
-                fragmentTransaction.commit();
+                fragmentTransaction.commit();*/
             }
         }
 

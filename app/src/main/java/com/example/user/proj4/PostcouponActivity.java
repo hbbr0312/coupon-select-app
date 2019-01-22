@@ -91,6 +91,7 @@ public class PostcouponActivity extends AppCompatActivity implements MyEventList
             }
         });
         coupon = findViewById(R.id.stcoupon);
+        Log.e("color",color);
         coupon.setBackgroundColor(Color.parseColor(color));
         //logo=BitmapFactory.decodeResource(getResources(), R.drawable.two); //TODO:logo받아서
         storelogo = findViewById(R.id.storelogo);
