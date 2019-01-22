@@ -31,6 +31,7 @@
         <activity android:name=".RegisterActivity" />
         <activity android:name=".managerRegister" />
         <activity android:name=".registerWhichone" />
+        <activity android:name=".PostcouponActivity" />
         <activity android:name=".couponsettingActivity" />
     </application>
 

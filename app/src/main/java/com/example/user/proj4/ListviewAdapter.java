@@ -45,9 +45,6 @@ public class ListviewAdapter extends BaseAdapter {
         /**store name*/
         TextView name= (TextView)convertView.findViewById(R.id.stname);
         name.setText(listviewitem.getName());
-        /**point*/
-        TextView point=(TextView)convertView.findViewById(R.id.stpoint);
-        point.setText("point : "+listviewitem.getPoint());
         /**logo*/
         ImageView logo=(ImageView)convertView.findViewById(R.id.stlogo);
         logo.setImageBitmap(listviewitem.getLogo()); //기본 카카오이미지로 아이콘
@@ -60,13 +57,25 @@ public class ListviewAdapter extends BaseAdapter {
         int remain = stamp - (coupon * 10); //미완성 쿠폰의 스탬프 개수
 
         Bitmap check = BitmapFactory.decodeResource(convertView.getResources(), R.drawable.check);
+        Bitmap blank = BitmapFactory.decodeResource(convertView.getResources(), R.drawable.blank);
 
         int[] btns = {R.id.stamp1, R.id.stamp2, R.id.stamp3, R.id.stamp4,R.id.stamp5,R.id.stamp6,R.id.stamp7,R.id.stamp8,R.id.stamp9,R.id.stamp10};
 
+        int j = 0;
+        // Check image.
         for(int i = 0; i < remain; i++) {
             ImageView imageView = convertView.findViewById(btns[i]);
             imageView.setImageBitmap(check);
+            j = i;
         }
+        // Blank image.
+        for(int i = j+1; i < 10; i++){
+            ImageView imageView = convertView.findViewById(btns[i]);
+            imageView.setImageBitmap(blank);
+        }
+        /**Full Coupons*/
+        TextView coupon_full = (TextView)convertView.findViewById(R.id.stcoupon_full);
+        coupon_full.setText("사용 가능한 쿠폰 : "+ String.valueOf(coupon));
 
         return convertView;
     }

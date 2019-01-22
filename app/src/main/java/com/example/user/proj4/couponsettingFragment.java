@@ -87,7 +87,7 @@ public class couponsettingFragment extends Fragment implements MyEventListener {
         samplelogo=storelogo;
         linear = view.findViewById(R.id.samplecoupon);
 
-        storename=PostcouponFragment.store;
+        storename=PostcouponActivity.store;
         Log.e("STORENAME","in setting..." +storename);
         stname = view.findViewById(R.id.storename);
         stname.setText(storename);
@@ -185,14 +185,14 @@ public class couponsettingFragment extends Fragment implements MyEventListener {
         storelogo = samplelogo;
 
         encoding();
-        new POSTing(this).execute("http://socrip4.kaist.ac.kr:3780/poststoreinfo"); //TODO:url값
+        new POSTing(this).execute("http://socrip4.kaist.ac.kr:3780/poststoreinfo");
     }
 
     @Override
     public void onEventCompleted(){
         Toast.makeText(getContext(),"Coupon 설정이 변경되었습니다",Toast.LENGTH_SHORT).show();
-        PostcouponFragment.color = storecolor;
-        PostcouponFragment.logo = storelogo;
+        PostcouponActivity.color = storecolor;
+        PostcouponActivity.logo = storelogo;
     }
 
     @Override

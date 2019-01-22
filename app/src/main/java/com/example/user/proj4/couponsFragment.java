@@ -51,7 +51,7 @@ public class couponsFragment extends Fragment implements MyEventListener {
         super.onCreate(savedInstanceState);
     }
 
-    @Nullable
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.activity_coupons,container,false);
@@ -105,7 +105,8 @@ public class couponsFragment extends Fragment implements MyEventListener {
     @Override
     public void onEventCompleted(){
         Log.e("on completed data size",""+data.size());
-        ListviewAdapter adapter1 = new ListviewAdapter(getContext(),R.layout.list_item, data);
+        Log.e("null???",""+(getActivity()==null));
+        ListviewAdapter adapter1 = new ListviewAdapter(getActivity(),R.layout.list_item, data);
         Log.e("adpater get count",""+adapter1.getCount());
         lv.setAdapter(adapter1);
         Log.e("get coupon information","success");

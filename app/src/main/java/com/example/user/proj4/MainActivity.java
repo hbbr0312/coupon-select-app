@@ -85,9 +85,7 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //TODO:coupon정보 다시 로드
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                updateuserinfo();
             }
         });
 
@@ -116,7 +114,7 @@ public class MainActivity extends AppCompatActivity
         Log.e("main public login",""+login);
         Log.e("main public ismanager",""+ismanager);
 
-        //처음 login 했을때 //TODO:user정보를 nav_header_main에 setText(), login menu사라지고 logout?
+        //처음 login 했을때
         info = session.getInfo();
         updateuserinfo();
         if(login){
@@ -189,6 +187,8 @@ public class MainActivity extends AppCompatActivity
         if(!login){
             register.setVisible(false);
             Log.e("register","setVisible false");
+        }else{
+            register.setVisible(true);
         }
         return true;
     }
@@ -258,26 +258,32 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-        if(id == R.id.nav_login){
-            /*
-            Intent intent1 = new Intent(MainActivity.this,LoginActivity.class);
-            startActivity(intent1);*/
-        } else if (id == R.id.nav_manage) {
+        if(id == R.id.nav_usable){
+            /**사용가능한 쿠폰*/
+        }
+
+        /**쿠폰 사용 적립 관리*/
+        else if (id == R.id.nav_manage) {
             if(permission(true)){
+
+                Intent intent = new Intent(MainActivity.this,PostcouponActivity.class);
+                startActivity(intent);
+                /*
                 PostcouponFragment lf = new PostcouponFragment();
                 fragmentManager = getSupportFragmentManager();
                 fragmentTransaction = fragmentManager.beginTransaction();
                 fragmentTransaction.replace(R.id.fragmentA,lf);
-                fragmentTransaction.commit();
-                /*
-                Intent intent = new Intent(MainActivity.this,PostcouponActivity.class);
-                startActivity(intent);
-                */
+                fragmentTransaction.commit();*/
             }
-        } else if (id == R.id.nav_send) {
+        }
+        /**매장 쿠폰 디자인 설정*/
+        else if (id == R.id.nav_setting) {
             if(permission(true)){
-                Intent intent2 = new Intent(MainActivity.this,couponsettingActivity.class);
-                startActivity(intent2);
+                couponsettingFragment cf = new couponsettingFragment();
+                fragmentManager = getSupportFragmentManager();
+                fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.fragmentA,cf);
+                fragmentTransaction.commit();
             }
         }
 
@@ -285,6 +291,5 @@ public class MainActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
-
 }
 

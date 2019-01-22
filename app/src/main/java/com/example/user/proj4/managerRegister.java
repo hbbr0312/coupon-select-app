@@ -45,7 +45,7 @@ public class managerRegister extends AppCompatActivity implements MyEventListene
 
     private TextView comment;
 
-    private HashMap<String, String> codematch = new HashMap(); //TODO: code넣어주기 key:store, value:code
+    private HashMap<String, String> codematch = new HashMap();
 
     private Spinner spinner;
 
