@@ -11,6 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
+        android:layout_marginBottom="20dp"
         android:gravity="left"
         android:orientation="vertical">
 
@@ -30,7 +31,7 @@
             android:layout_marginLeft="10dp"
             android:layout_marginTop="5dp"
             android:text="store name"
-            android:textColor="#404040"
+            android:textColor="#ffffff"
             android:textSize="20dp"
             android:textStyle="bold" />
 
@@ -41,46 +42,47 @@
             android:layout_marginLeft="10dp"
             android:layout_marginTop="3dp"
             android:layout_marginBottom="3dp"
+            android:paddingBottom="5dp"
             android:text="사용 가능한 쿠폰 : 0"
-            android:textColor="#009999"
+            android:textColor="#ffffff"
             android:textSize="20dp" />
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="30dp">
+            android:layout_height="40dp">
 
             <ImageView
                 android:id="@+id/stamp1"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:layout_marginTop="0dp"
                 android:layout_weight="1"
                 android:padding="5dip" />
             <ImageView
                 android:id="@+id/stamp2"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:layout_marginTop="0dp"
                 android:layout_weight="1"
                 android:padding="5dip" />
             <ImageView
                 android:id="@+id/stamp3"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:layout_marginTop="0dp"
                 android:layout_weight="1"
                 android:padding="5dip" />
             <ImageView
                 android:id="@+id/stamp4"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:layout_marginTop="0dp"
                 android:layout_weight="1"
                 android:padding="5dip" />
             <ImageView
                 android:id="@+id/stamp5"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:layout_marginTop="0dp"
                 android:layout_weight="1"
                 android:padding="5dip" />
@@ -88,42 +90,42 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="30dp">
+            android:layout_height="50dp">
             <ImageView
                 android:id="@+id/stamp6"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:layout_marginTop="0dp"
                 android:layout_weight="1"
-                android:padding="5dip" />
+                android:padding="5dip"/>
             <ImageView
                 android:id="@+id/stamp7"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:layout_marginTop="0dp"
                 android:layout_weight="1"
-                android:padding="5dip" />
+                android:padding="5dip"/>
             <ImageView
                 android:id="@+id/stamp8"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:layout_marginTop="0dp"
                 android:layout_weight="1"
-                android:padding="5dip" />
+                android:padding="5dip"/>
             <ImageView
                 android:id="@+id/stamp9"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:layout_marginTop="0dp"
                 android:layout_weight="1"
-                android:padding="5dip" />
+                android:padding="5dip"/>
             <ImageView
                 android:id="@+id/stamp10"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:layout_marginTop="0dp"
                 android:layout_weight="1"
-                android:padding="5dip" />
+                android:padding="5dip"/>
         </LinearLayout>
 
     </LinearLayout>
