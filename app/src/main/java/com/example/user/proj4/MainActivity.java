@@ -53,7 +53,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener{
 
     public static boolean login=false;
     public static boolean ismanager = false;
@@ -167,7 +167,6 @@ public class MainActivity extends AppCompatActivity
             ismanager=true;
             storename = info.get("storename");
         }
-
     }
 
 
@@ -239,12 +238,18 @@ public class MainActivity extends AppCompatActivity
             if(login){ //logout할거임
                 Toast.makeText(MainActivity.this,"logout되었습니다",Toast.LENGTH_SHORT).show();
                 session.logout();
-                updateuserinfo();
+                tname.setText("로그인이 필요합니다.");
+                tid.setText("");
+                tphone.setText("");
+                LoginFragment lf = new LoginFragment();
+                fragmentManager = getSupportFragmentManager();
+                fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.fragmentA,lf);
+                fragmentTransaction.commit();
             }
             login=!login;
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -257,18 +262,6 @@ public class MainActivity extends AppCompatActivity
             /*
             Intent intent1 = new Intent(MainActivity.this,LoginActivity.class);
             startActivity(intent1);*/
-        }
-        else if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-            if(permission(false)){
-
-                /*
-                Intent intent0 = new Intent(MainActivity.this,couponsActivity.class);
-                startActivity(intent0);*/
-            }
-        } else if (id == R.id.nav_slideshow) {
-
         } else if (id == R.id.nav_manage) {
             if(permission(true)){
                 PostcouponFragment lf = new PostcouponFragment();
@@ -281,10 +274,8 @@ public class MainActivity extends AppCompatActivity
                 startActivity(intent);
                 */
             }
-        } else if (id == R.id.nav_share) {
-
         } else if (id == R.id.nav_send) {
-            if(true){ //permission(true)
+            if(permission(true)){
                 Intent intent2 = new Intent(MainActivity.this,couponsettingActivity.class);
                 startActivity(intent2);
             }
