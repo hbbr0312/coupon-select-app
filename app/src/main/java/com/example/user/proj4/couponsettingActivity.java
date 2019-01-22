@@ -43,6 +43,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+//manager가 처음에 회원가입할때만 띄우는 액티비티임
 public class couponsettingActivity extends AppCompatActivity implements MyEventListener {
     //현재값
     public String storecolor = "#9e0000"; //지울거
