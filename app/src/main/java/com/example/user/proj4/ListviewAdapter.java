@@ -69,7 +69,10 @@ public class ListviewAdapter extends BaseAdapter {
             j = i;
         }
         // Blank image.
+
         for(int i = j+1; i < 10; i++){
+
+        for(int i = j; i < 10; i++){
             ImageView imageView = convertView.findViewById(btns[i]);
             imageView.setImageBitmap(blank);
         }
