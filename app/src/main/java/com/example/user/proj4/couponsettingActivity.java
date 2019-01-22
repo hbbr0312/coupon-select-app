@@ -206,6 +206,7 @@ public class couponsettingActivity extends AppCompatActivity implements MyEventL
         protected String doInBackground(String... urls) {
             try {
                 JSONObject jsonObject = new JSONObject();
+                Log.e("post store name"," in setting"+storename);
                 jsonObject.accumulate("storename",storename);
                 jsonObject.accumulate("color",storecolor);
                 jsonObject.accumulate("logo",encoding());

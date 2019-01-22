@@ -87,6 +87,9 @@ public class managerRegister extends AppCompatActivity implements MyEventListene
         storelist.add("dunkin");
         codematch.put("dunkin","AAA");
 
+        storelist.add("test");
+        codematch.put("test","AAA");
+
 
 
         ArrayAdapter spinnerAdapter;

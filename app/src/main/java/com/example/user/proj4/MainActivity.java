@@ -11,6 +11,9 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
@@ -63,6 +66,10 @@ public class MainActivity extends AppCompatActivity
     public static Session session;
     private HashMap<String,String> info;
 
+    private FragmentManager fragmentManager;
+    private FragmentTransaction fragmentTransaction;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -89,6 +96,7 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         session = new Session(MainActivity.this);
+
 
 
     }
@@ -214,13 +222,20 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
         if(id == R.id.nav_login){
+            //TODO:fragment test
+            LoginFragment f = new LoginFragment();
+            fragmentManager = getSupportFragmentManager();
+            fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.replace(R.id.fragmentA,f);
+            fragmentTransaction.commit();
+            /*
             if(login){
                 Toast.makeText(MainActivity.this,"logout되었습니다",Toast.LENGTH_SHORT).show();
                 session.logout();
             }
             Intent intent1 = new Intent(MainActivity.this,LoginActivity.class);
             startActivity(intent1);
-            login=!login;
+            login=!login;*/
         }
         else if (id == R.id.nav_camera) {
             // Handle the camera action
