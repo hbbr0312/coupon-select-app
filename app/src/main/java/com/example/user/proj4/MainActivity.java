@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     public static boolean login=false;
-    public static boolean ismanager = true;///TODO:false로
+    public static boolean ismanager = false;
 
     public static String storename="";
     public static String userid;
@@ -69,6 +69,10 @@ public class MainActivity extends AppCompatActivity
     private FragmentManager fragmentManager;
     private FragmentTransaction fragmentTransaction;
 
+    private View headerView;
+    TextView tname;
+    TextView tid;
+    TextView tphone;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,6 +85,7 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //TODO:coupon정보 다시 로드
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
@@ -92,13 +97,15 @@ public class MainActivity extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
+        //왼쪽 메뉴 탭
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        headerView = navigationView.getHeaderView(0);
+        tname = headerView.findViewById(R.id.name);
+        tid = headerView.findViewById(R.id.userid);
+        tphone = headerView.findViewById(R.id.phone);
 
         session = new Session(MainActivity.this);
-
-
-
     }
 
     @Override
@@ -108,33 +115,60 @@ public class MainActivity extends AppCompatActivity
         Log.e("main","onstart");
         Log.e("main public login",""+login);
         Log.e("main public ismanager",""+ismanager);
+
         //처음 login 했을때 //TODO:user정보를 nav_header_main에 setText(), login menu사라지고 logout?
         info = session.getInfo();
-        if(!login){
-            if(info.get("id").length()>0){ //login을 했었다는것 //TODO:로그아웃누르면 session.setInfo("",...)
-
-                /*if(info.get("ismanger").equals("true")){
-                    ismanager = true;
-                }*/
-                login = true;
-            }else {
-                Log.e("onstart","login false");
-                return;
+        updateuserinfo();
+        if(login){
+            if(ismanager){
+                //manager일때 //TODO:관리자 탭보이도록 일반유저면 안보이게
             }
         }
-        //manager일때 //TODO:관리자 탭보이도록 일반유저면 안보이게
-        if(ismanager){
-            storename = info.get("storename");
-        }
-        userid = info.get("id");
-        phone = info.get("phone");
-        name = info.get("name");
-
-
 
 
     }
 
+    //login하거나 logout할때 userid,phone,name 재설정해주고, 왼쪽 메뉴탭에도 적용
+    public void updateuserinfo(){
+        getsession();
+        Log.e("updating","...");
+        if(login){
+            Log.e("updating","현재상태 로그인");
+            tname.setText(name+" 고객님");
+            tid.setText("ID : "+userid);
+            tphone.setText("Phone number : "+phone);
+            couponsFragment cf = new couponsFragment();
+            fragmentManager = getSupportFragmentManager();
+            fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.replace(R.id.fragmentA,cf);
+            fragmentTransaction.commit();
+        }else{
+            Log.e("updating","현재상태 로그아웃");
+            tname.setText("로그인이 필요합니다.");
+            tid.setText("");
+            tphone.setText("");
+            LoginFragment lf = new LoginFragment();
+            fragmentManager = getSupportFragmentManager();
+            fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.replace(R.id.fragmentA,lf);
+            fragmentTransaction.commit();
+        }
+    }
+
+    //session에서 준 정보를 가지고 login했는지 보고 login값 재설정,유저정보 업데이트
+    public void getsession(){
+        userid = info.get("id");
+        if(userid.length()>0){ //login session maintain
+            login=true;
+        }
+        phone = info.get("phone");
+        name = info.get("name");
+        if(info.get("ismanager").equals("true")) {
+            ismanager=true;
+            storename = info.get("storename");
+        }
+
+    }
 
 
 
@@ -151,17 +185,9 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.activity_main_drawer, menu); //원래 main이었음
-        MenuItem register = menu.findItem(R.id.nav_manage);
-        //View b = findViewById(R.id.nav_manage);
-        //b.setVisibility(View.GONE);
-        if(ismanager)
-        {
-            register.setVisible(true);
-            Log.e("register","setVisible true");
-        }
-        else
-        {
+        getMenuInflater().inflate(R.menu.main, menu);
+        MenuItem register = menu.findItem(R.id.action_settings);
+        if(!login){
             register.setVisible(false);
             Log.e("register","setVisible false");
         }
@@ -210,6 +236,12 @@ public class MainActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            if(login){ //logout할거임
+                Toast.makeText(MainActivity.this,"logout되었습니다",Toast.LENGTH_SHORT).show();
+                session.logout();
+                updateuserinfo();
+            }
+            login=!login;
             return true;
         }
 
@@ -222,34 +254,32 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
         if(id == R.id.nav_login){
-            //TODO:fragment test
-            LoginFragment f = new LoginFragment();
-            fragmentManager = getSupportFragmentManager();
-            fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.replace(R.id.fragmentA,f);
-            fragmentTransaction.commit();
             /*
-            if(login){
-                Toast.makeText(MainActivity.this,"logout되었습니다",Toast.LENGTH_SHORT).show();
-                session.logout();
-            }
             Intent intent1 = new Intent(MainActivity.this,LoginActivity.class);
-            startActivity(intent1);
-            login=!login;*/
+            startActivity(intent1);*/
         }
         else if (id == R.id.nav_camera) {
             // Handle the camera action
         } else if (id == R.id.nav_gallery) {
             if(permission(false)){
+
+                /*
                 Intent intent0 = new Intent(MainActivity.this,couponsActivity.class);
-                startActivity(intent0);
+                startActivity(intent0);*/
             }
         } else if (id == R.id.nav_slideshow) {
 
         } else if (id == R.id.nav_manage) {
             if(permission(true)){
+                PostcouponFragment lf = new PostcouponFragment();
+                fragmentManager = getSupportFragmentManager();
+                fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.fragmentA,lf);
+                fragmentTransaction.commit();
+                /*
                 Intent intent = new Intent(MainActivity.this,PostcouponActivity.class);
                 startActivity(intent);
+                */
             }
         } else if (id == R.id.nav_share) {
 

@@ -6,18 +6,15 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+import android.widget.ListView;
 
-public class fragment1 extends Fragment {
+import java.util.ArrayList;
 
-    TextView textView;
-    public static String what;
+public class couponsettingFragment extends Fragment {
+    private View view;
 
-    public fragment1(){
+    public couponsettingFragment(){
 
-    }
-    public static void test(String status){
-        what = status;
     }
 
     @Override
@@ -28,14 +25,9 @@ public class fragment1 extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        view = inflater.inflate(R.layout.activity_coupons,container,false);
 
 
-        View view = inflater.inflate(R.layout.fragment,container,false);
-
-
-        textView = (TextView)view.findViewById(R.id.test);
-        textView.setText(what);
         return  view;
     }
-
 }

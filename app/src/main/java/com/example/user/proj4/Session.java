@@ -16,18 +16,20 @@ public class Session {
     }
 
     public void logout(){
-        prefs.edit().putString("id", "").commit();
-        prefs.edit().putString("name", "").commit();
-        prefs.edit().putString("phone", "").commit();
-        prefs.edit().putString("ismanager", "false").commit();
-        prefs.edit().putString("storename", "").commit();
+        prefs.edit().putString("id", "").apply();
+        prefs.edit().putString("name", "").apply();
+        prefs.edit().putString("phone", "").apply();
+        prefs.edit().putString("ismanager", "false").apply();
+        prefs.edit().putString("storename", "").apply();
     }
     public void setInfo(String id, String name, String phone, boolean ismanager, String storename){
-        prefs.edit().putString("id", id).commit();
-        prefs.edit().putString("name", name).commit();
-        prefs.edit().putString("phone", phone).commit();
-        prefs.edit().putString("ismanager", ismanager+"").commit();
-        prefs.edit().putString("storename", storename).commit();
+        prefs.edit().putString("id", id).apply();
+        prefs.edit().putString("name", name).apply();
+        prefs.edit().putString("phone", phone).apply();
+        prefs.edit().putString("storename", storename).apply();
+        if(ismanager) prefs.edit().putString("ismanager", "true").apply();
+        else prefs.edit().putString("ismanager", "false").apply();
+
     }
 
     public HashMap<String,String> getInfo() {

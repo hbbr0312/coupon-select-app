@@ -190,7 +190,7 @@ public class RegisterActivity extends AppCompatActivity implements MyEventListen
         }
         if(index==2){
             Toast.makeText(RegisterActivity.this,"회원가입이 완료되었습니다.",Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+            Intent intent = new Intent(getApplicationContext(), MainActivity.class); //TODO:login페이지로
             startActivity(intent);
         }
 

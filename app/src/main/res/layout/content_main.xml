@@ -7,13 +7,12 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".MainActivity"
     tools:showIn="@layout/app_bar_main">
-    <fragment
+
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/fragmentA"
-        class="com.example.user.proj4.fragment1"
-        android:text="fragmennt view"
         android:layout_weight="1"
-        tools:layout="@layout/activity_main" />
+        android:id="@+id/fragmentA" />
+
 
 </android.support.v4.widget.DrawerLayout>

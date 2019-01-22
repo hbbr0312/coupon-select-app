@@ -13,7 +13,9 @@
             android:gravity="center_horizontal"
             android:layout_marginTop="20dp"
             android:textSize="20dp"
-            android:text = "관리자 회원가입"/>
+            android:text = "관리자 회원가입"
+            android:textColor="@color/background900"
+            android:typeface="monospace"/>
         <TextView
             android:id="@+id/mcomment"
             android:layout_width="wrap_content"
@@ -23,7 +25,7 @@
             android:textSize="15dp"
             android:text =""/>
         <LinearLayout
-            android:layout_marginTop="2dp"
+            android:layout_marginTop="10dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
@@ -39,38 +41,51 @@
                     android:layout_width="match_parent"
                     android:layout_height="45dp"
                     android:gravity="center"
-                    android:text="id" />
+                    android:text="ID"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:typeface="monospace"/>
                 <TextView
                     android:layout_marginTop="20dp"
                     android:layout_width="match_parent"
                     android:layout_height="45dp"
                     android:gravity="center"
-                    android:text="password" />
+                    android:text="Password"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:typeface="monospace"/>
                 <TextView
                     android:layout_marginTop="20dp"
                     android:layout_width="match_parent"
                     android:layout_height="45dp"
                     android:gravity="center"
-                    android:text="name" />
+                    android:text="Name"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:typeface="monospace"/>
 
                 <TextView
                     android:layout_marginTop="20dp"
                     android:layout_width="match_parent"
                     android:layout_height="45dp"
                     android:gravity="center"
-                    android:text="phone number" />
+                    android:text="Phone number"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:typeface="monospace"/>
+
                 <TextView
                     android:layout_marginTop="20dp"
                     android:layout_width="match_parent"
                     android:layout_height="45dp"
                     android:gravity="center"
-                    android:text="store name" />
+                    android:text="Store name"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:typeface="monospace"/>
                 <TextView
                     android:layout_marginTop="20dp"
                     android:layout_width="match_parent"
                     android:layout_height="45dp"
                     android:gravity="center"
-                    android:text="store code" />
+                    android:text="Store code"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:typeface="monospace"/>
             </LinearLayout>
 
             <LinearLayout
@@ -83,26 +98,38 @@
                     android:layout_marginTop="20dp"
                     android:layout_width="match_parent"
                     android:layout_height="45dp"
-                    android:hint="id" />
+                    android:hint="ID"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textColorHint="@color/colorPrimary"
+                    android:typeface="monospace"/>
                 <EditText
                     android:id="@+id/meditPw"
                     android:layout_marginTop="20dp"
                     android:layout_width="match_parent"
                     android:layout_height="45dp"
-                    android:hint="password" />
+                    android:hint="Password"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textColorHint="@color/colorPrimary"
+                    android:typeface="monospace"/>
                 <EditText
                     android:id="@+id/meditName"
                     android:layout_marginTop="20dp"
                     android:layout_width="match_parent"
                     android:layout_height="45dp"
-                    android:hint="name" />
+                    android:hint="Name"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textColorHint="@color/colorPrimary"
+                    android:typeface="monospace"/>
 
                 <EditText
                     android:id="@+id/meditPhone"
                     android:layout_marginTop="20dp"
                     android:layout_width="match_parent"
                     android:layout_height="45dp"
-                    android:hint="phone number" />
+                    android:hint="Phone number"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textColorHint="@color/colorPrimary"
+                    android:typeface="monospace"/>
 
                 <Spinner
                     android:id="@+id/mspinner1"
@@ -115,7 +142,10 @@
                     android:layout_marginTop="20dp"
                     android:layout_width="match_parent"
                     android:layout_height="45dp"
-                    android:hint="code" />
+                    android:hint="Code"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textColorHint="@color/colorPrimary"
+                    android:typeface="monospace"/>
             </LinearLayout>
 
             <LinearLayout
@@ -128,7 +158,10 @@
                     android:id="@+id/mduplecheck"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="중복확인" />
+                    android:text="중복확인"
+                    android:background="@color/colorAccent"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:typeface="monospace"/>
             </LinearLayout>
 
 
@@ -139,7 +172,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/mregister"
-            android:text="register"/>
+            android:text="register"
+            android:background="@color/colorAccent"
+            android:textColor="@color/colorPrimaryDark"
+            android:typeface="monospace"/>
 
     </LinearLayout>
 

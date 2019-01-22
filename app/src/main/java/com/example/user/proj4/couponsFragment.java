@@ -4,12 +4,17 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.AsyncTask;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.util.Base64;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.zxing.BarcodeFormat;
@@ -22,7 +27,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -32,33 +36,42 @@ import java.net.URL;
 import java.util.ArrayList;
 
 /**view coupon list!*/
-public class couponsActivity extends AppCompatActivity implements MyEventListener {
+public class couponsFragment extends Fragment implements MyEventListener {
     private ArrayList<Listviewitem> data;
     private ListView lv;
     private ImageView qrcode;
     private String id ="test";
+    private View view;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_coupons);
-
-        data = new ArrayList<>();
-        lv = (ListView) findViewById(R.id.ListView);
-        id = MainActivity.userid;
-
+    public couponsFragment(){
     }
 
     @Override
-    protected void onStart() {
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        view = inflater.inflate(R.layout.activity_coupons,container,false);
+        data = new ArrayList<>();
+        lv = (ListView) view.findViewById(R.id.ListView);
+        id = MainActivity.userid;
+
+        return  view;
+    }
+
+    @Override
+    public void onStart() {
         super.onStart();
-        Toast.makeText(couponsActivity.this, "login "+MainActivity.login, Toast.LENGTH_SHORT).show();
+        Toast.makeText(getContext(), "login "+MainActivity.login, Toast.LENGTH_SHORT).show();
         if(MainActivity.login){
             //listview
             new GETing(this).execute("http://socrip4.kaist.ac.kr:3780/getcouponinfo?id="+id);
 
             //qr code생성
-            qrcode = (ImageView) findViewById(R.id.qrcode);
+            qrcode = (ImageView) view.findViewById(R.id.qrcode);
             Bitmap bitmap = generateQRCode(id);
             qrcode.setImageBitmap(bitmap);
         }
@@ -92,7 +105,7 @@ public class couponsActivity extends AppCompatActivity implements MyEventListene
     @Override
     public void onEventCompleted(){
         Log.e("on completed data size",""+data.size());
-        ListviewAdapter adapter1 = new ListviewAdapter(this,R.layout.list_item, data);
+        ListviewAdapter adapter1 = new ListviewAdapter(getContext(),R.layout.list_item, data);
         Log.e("adpater get count",""+adapter1.getCount());
         lv.setAdapter(adapter1);
         Log.e("get coupon information","success");
@@ -129,7 +142,7 @@ public class couponsActivity extends AppCompatActivity implements MyEventListene
                     //con.setDoOutput(true);//Outstream으로 post 데이터를 넘겨주겠다는 의미
                     con.setDoInput(true);//Inputstream으로 서버로부터 응답을 받겠다는 의미
                     con.connect();
-                    Log.e("status",""+con.getResponseCode());
+                    //Log.e("status",""+con.getResponseCode());
 
                     //서버로 부터 데이터를 받음
                     InputStream stream = con.getInputStream();
@@ -174,7 +187,8 @@ public class couponsActivity extends AppCompatActivity implements MyEventListene
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
             if(callback!=null){
-                if(result==null){
+                if(result.length()<=2){
+                    Log.e("this user","does not have coupon");
                     callback.onEventCompleted();
                     return;
                 }
@@ -216,5 +230,6 @@ public class couponsActivity extends AppCompatActivity implements MyEventListene
         byte[] decodedByte = Base64.decode(input, 0);
         return BitmapFactory.decodeByteArray(decodedByte, 0, decodedByte.length);
     }
+
 
 }

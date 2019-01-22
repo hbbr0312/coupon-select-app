@@ -28,12 +28,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".LoginActivity" />
         <activity android:name=".RegisterActivity" />
-        <activity android:name=".PostcouponActivity" />
         <activity android:name=".managerRegister" />
         <activity android:name=".registerWhichone" />
-        <activity android:name=".couponsActivity" />
         <activity android:name=".couponsettingActivity" />
     </application>
 

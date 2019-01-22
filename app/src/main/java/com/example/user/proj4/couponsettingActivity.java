@@ -77,8 +77,8 @@ public class couponsettingActivity extends AppCompatActivity implements MyEventL
         samplelogo=storelogo;
         linear = findViewById(R.id.samplecoupon);
 
-        if(PostcouponActivity.store==null) storename = firststorename;
-        else storename=PostcouponActivity.store;
+        if(PostcouponFragment.store==null) storename = firststorename;
+        else storename=PostcouponFragment.store;
         Log.e("STORENAME","in setting..." +storename);
         stname =findViewById(R.id.storename);
         stname.setText(storename);
@@ -180,13 +180,13 @@ public class couponsettingActivity extends AppCompatActivity implements MyEventL
     @Override
     public void onEventCompleted(){
         Toast.makeText(couponsettingActivity.this,"Coupon 설정이 변경되었습니다",Toast.LENGTH_SHORT).show();
-        PostcouponActivity.color = storecolor;
-        PostcouponActivity.logo = storelogo;
+        PostcouponFragment.color = storecolor;
+        PostcouponFragment.logo = storelogo;
         //PostcouponActivity.store = storename;
 
         if(getIntent().getBooleanExtra("register",false)){
             //관리자가 회원가입했을때 쿠폰설정하고 로그인 페이지로 돌아가도록
-            Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
             startActivity(intent);
         }
     }

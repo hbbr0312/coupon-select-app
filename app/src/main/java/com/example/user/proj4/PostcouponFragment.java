@@ -2,21 +2,27 @@ package com.example.user.proj4;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -30,19 +36,9 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import android.content.Intent;
-import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.view.View;
-import android.widget.Button;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import com.google.zxing.integration.android.IntentIntegrator;
-import com.google.zxing.integration.android.IntentResult;
-
-/**관리자 메뉴*/
-public class PostcouponActivity extends AppCompatActivity implements MyEventListener{
+public class PostcouponFragment extends Fragment implements MyEventListener {
+    private View view;
     public static String store; //="kaist";//TODO:매장 매니저가 로그인하면 입력한 매장이름 받아오기
     public String userid;
     public String change="0";
@@ -75,22 +71,31 @@ public class PostcouponActivity extends AppCompatActivity implements MyEventList
     // QR code scanner object.
     private IntentIntegrator qrScan;
 
+    public PostcouponFragment(){
+
+    }
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.post_coupon);
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        view = inflater.inflate(R.layout.post_coupon,container,false);
 
         // Initializing scan object.
-        qrScan = new IntentIntegrator(this);
+        qrScan = new IntentIntegrator(getActivity());
         if(store==null) Log.e("STORE NAME is null","...");
         else Log.e("STORE NAME",store);
 
-        comment = (TextView) findViewById(R.id.comment1); //warning comment
+        comment = (TextView) view.findViewById(R.id.comment1); //warning comment
 
         /**user coupon*/
-        storename = (TextView) findViewById(R.id.storename); //storename
+        storename = (TextView) view.findViewById(R.id.storename); //storename
         storename.setText(store);
-        scan = (Button) findViewById(R.id.gotoscan);
+        scan = (Button) view.findViewById(R.id.gotoscan);
         scan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -98,21 +103,21 @@ public class PostcouponActivity extends AppCompatActivity implements MyEventList
                 qrScan.initiateScan();
             }
         });
-        coupon = findViewById(R.id.stcoupon);
+        coupon = view.findViewById(R.id.stcoupon);
         coupon.setBackgroundColor(Color.parseColor(color));
         //logo=BitmapFactory.decodeResource(getResources(), R.drawable.two); //TODO:logo받아서
-        storelogo = findViewById(R.id.storelogo);
+        storelogo = view.findViewById(R.id.storelogo);
         storelogo.setImageBitmap(logo);
 
 
         /**user information*/
-        viewid = (TextView) findViewById(R.id.viewid);
-        viewpoint = (TextView) findViewById(R.id.viewpoint);
+        viewid = (TextView) view.findViewById(R.id.viewid);
+        viewpoint = (TextView) view.findViewById(R.id.viewpoint);
 
         /**point use*/
-        usedec = (Button) findViewById(R.id.usedec); //use point decrease button
-        useinc = (Button) findViewById(R.id.useinc); //use point increase button
-        usenum = (EditText) findViewById(R.id.useedit); //사용 point 입력란
+        usedec = (Button) view.findViewById(R.id.usedec); //use point decrease button
+        useinc = (Button) view.findViewById(R.id.useinc); //use point increase button
+        usenum = (EditText) view.findViewById(R.id.useedit); //사용 point 입력란
         usenum.addTextChangedListener(new TextWatcher() {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -149,7 +154,7 @@ public class PostcouponActivity extends AppCompatActivity implements MyEventList
                 changeEdit(usenum,false);
             }
         });
-        Button use = (Button) findViewById(R.id.use); //사용버튼
+        Button use = (Button) view.findViewById(R.id.use); //사용버튼
         use.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -163,9 +168,9 @@ public class PostcouponActivity extends AppCompatActivity implements MyEventList
         });
 
         /**point accumulate*/
-        pointdec = (Button) findViewById(R.id.pointdec); //point decrease button
-        pointinc = (Button) findViewById(R.id.pointinc); //point increase button
-        pointnum = (EditText) findViewById(R.id.pointedit); //적립 point 입력란
+        pointdec = (Button) view.findViewById(R.id.pointdec); //point decrease button
+        pointinc = (Button) view.findViewById(R.id.pointinc); //point increase button
+        pointnum = (EditText) view.findViewById(R.id.pointedit); //적립 point 입력란
         pointnum.addTextChangedListener(new TextWatcher() {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -202,7 +207,7 @@ public class PostcouponActivity extends AppCompatActivity implements MyEventList
                 changeEdit(pointnum,false);
             }
         });
-        Button point = (Button) findViewById(R.id.point); //적립버튼
+        Button point = (Button) view.findViewById(R.id.point); //적립버튼
         point.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -215,11 +220,13 @@ public class PostcouponActivity extends AppCompatActivity implements MyEventList
                 }
             }
         });
+
+        return  view;
     }
 
     // Get the scan results.
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data){
+    public void onActivityResult(int requestCode, int resultCode, Intent data){
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
         if (result != null){
             // If there's a QR code.
@@ -261,7 +268,7 @@ public class PostcouponActivity extends AppCompatActivity implements MyEventList
     }
     @Override
     public void onEventCompleted(){
-        Toast.makeText(PostcouponActivity.this,"complete!",Toast.LENGTH_SHORT).show();
+        Toast.makeText(getContext(),"complete!",Toast.LENGTH_SHORT).show();
         updateinfo();
         Log.e("event","completed");
     }

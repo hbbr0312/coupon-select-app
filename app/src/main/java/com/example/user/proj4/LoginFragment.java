@@ -120,7 +120,7 @@ public class LoginFragment extends Fragment implements MyEventListener {
             if(!storename.equals("")) {
                 ismanager=true;
                 MainActivity.ismanager=true;
-                PostcouponActivity.store=storename;
+                PostcouponFragment.store=storename;
             }
             MainActivity.session.setInfo(userid, name, phone, ismanager, storename); //TODO: Main에서 id,name,phone,ismanager,(storename)지정
             startActivity(intent);
