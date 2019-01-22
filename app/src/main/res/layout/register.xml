@@ -13,52 +13,65 @@
             android:gravity="center_horizontal"
             android:layout_marginTop="40dp"
             android:textSize="20dp"
-            android:text = "사용자 회원가입"/>
+            android:text = "사용자 회원가입"
+            android:textColor="@color/colorAccent"
+            android:typeface="monospace"/>
         <TextView
             android:id="@+id/comment"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
-            android:textColor="@color/colorAccent"
+            android:textColor="@color/colorAlert"
             android:textSize="15dp"
             android:text =""/>
+
         <LinearLayout
-            android:layout_marginTop="2dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center">
+            android:layout_marginTop="10dp"
+            android:gravity="center"
+            android:orientation="horizontal">
 
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                >
-                <TextView
-                    android:layout_marginTop="20dp"
-                    android:layout_width="match_parent"
-                    android:layout_height="45dp"
-                    android:gravity="center"
-                    android:text="id" />
-                <TextView
-                    android:layout_marginTop="20dp"
-                    android:layout_width="match_parent"
-                    android:layout_height="45dp"
-                    android:gravity="center"
-                    android:text="password" />
-                <TextView
-                    android:layout_marginTop="20dp"
-                    android:layout_width="match_parent"
-                    android:layout_height="45dp"
-                    android:gravity="center"
-                    android:text="name" />
+                android:orientation="vertical">
 
                 <TextView
-                    android:layout_marginTop="20dp"
                     android:layout_width="match_parent"
                     android:layout_height="45dp"
+                    android:layout_marginTop="20dp"
                     android:gravity="center"
-                    android:text="phone number" />
+                    android:text="ID"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:typeface="monospace" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="45dp"
+                    android:layout_marginTop="20dp"
+                    android:gravity="center"
+                    android:text="Password"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:typeface="monospace" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="45dp"
+                    android:layout_marginTop="20dp"
+                    android:gravity="center"
+                    android:text="Name"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:typeface="monospace" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="45dp"
+                    android:layout_marginTop="20dp"
+                    android:gravity="center"
+                    android:text="Phone number"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:typeface="monospace" />
             </LinearLayout>
 
             <LinearLayout
@@ -66,31 +79,46 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
                 android:orientation="vertical">
+
                 <EditText
                     android:id="@+id/editId"
-                    android:layout_marginTop="20dp"
                     android:layout_width="match_parent"
                     android:layout_height="45dp"
-                    android:hint="id" />
+                    android:layout_marginTop="20dp"
+                    android:hint="ID"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textColorHint="@color/colorPrimary"
+                    android:typeface="monospace" />
+
                 <EditText
                     android:id="@+id/editPw"
-                    android:layout_marginTop="20dp"
                     android:layout_width="match_parent"
                     android:layout_height="45dp"
-                    android:hint="password" />
+                    android:layout_marginTop="20dp"
+                    android:hint="Password"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textColorHint="@color/colorPrimary"
+                    android:typeface="monospace" />
+
                 <EditText
                     android:id="@+id/editName"
-                    android:layout_marginTop="20dp"
                     android:layout_width="match_parent"
                     android:layout_height="45dp"
-                    android:hint="name" />
+                    android:layout_marginTop="20dp"
+                    android:hint="Name"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textColorHint="@color/colorPrimary"
+                    android:typeface="monospace" />
 
                 <EditText
                     android:id="@+id/editPhone"
-                    android:layout_marginTop="20dp"
                     android:layout_width="match_parent"
                     android:layout_height="45dp"
-                    android:hint="phone number" />
+                    android:layout_marginTop="20dp"
+                    android:hint="Phone number"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textColorHint="@color/colorPrimary"
+                    android:typeface="monospace" />
             </LinearLayout>
 
             <LinearLayout
@@ -103,7 +131,10 @@
                     android:id="@+id/duplecheck"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="중복확인" />
+                    android:background="@color/colorAccent"
+                    android:text="중복확인"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:typeface="monospace" />
             </LinearLayout>
 
 
@@ -115,7 +146,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/register"
-            android:text="register"/>
+            android:text="register"
+            android:background="@color/colorAccent"
+            android:textColor="@color/colorPrimaryDark"
+            android:typeface="monospace"/>
 
     </LinearLayout>
 
