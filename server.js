@@ -115,12 +115,13 @@ app.post('/postmember', function(req, res){
 		var password = req.body.password;
 		var name = req.body.name;
 		var phone = req.body.phone;
+		var store = req.body.store;
 		
 		// Encode user password.
 		password = crypto.createHash('sha512').update(password).digest('base64');
 		
 		var Client = mongoose.model('Schema', new Schema({id : String, password : String, name : String, phone : String, store : String}), 'client');
-		var newInfo = {'id' : id, 'password' : password, 'name' : name};
+		var newInfo = {'id' : id, 'password' : password, 'name' : name, 'phone' : phone, 'store' : store};
 		
 		// If users do not check their id validity or do ignore the invalidity,
 		// it is filterd at the application side.
@@ -267,10 +268,10 @@ app.post('/poststoreinfo', function(req, res){
 		var storename = req.body.storename;
 		var color = req.body.color;
 		var logo = req.body.logo;
-		
+		console.log(storename);
 		var Store = mongoose.model('Schema', new Schema({storename : String, color : String, logo : String}), 'store');
 		var condition = {'storename' : storename};
-		var update = {'$set' : {'color' : color, 'logo' : logo}};
+		var update = {'$set' : {'storename' : storename, 'color' : color, 'logo' : logo}};
 		var option = {upsert : true, new : true, useFindAndModify : false};
 		
 		Store.findOneAndUpdate(condition, update, option, function(error, data){
@@ -332,6 +333,7 @@ app.get('/getcouponinfo', function(req, res){
 					res.setHeader('Content-Type', 'text/json');
 					res.write(' ' + data.toString());
 					res.end();
+					mongoose.deleteModel('Schema');
 				}else{
 					mongoose.deleteModel('Schema');
 					
@@ -340,7 +342,7 @@ app.get('/getcouponinfo', function(req, res){
 					data2 = [];
 					
 					var Store = mongoose.model('Schema', new Schema({storename : String, color : String, logo : String}), 'store');
-										
+					
 					data1.forEach(function(e){
 						condition = {'storename' : e.store};
 						get = {'_id' : 0, 'storename' : 0, '__v' : 0};
@@ -406,7 +408,8 @@ app.post('/postcouponinfo', function(req, res){
 		
 		var Coupon = mongoose.model('Schema', new Schema({store : String, id : String, num_coupon : String}), 'coupon');
 		var condition = {"store" : store, "id" : id};
-		var get = {"_id" : 0, "store" : 0, "id" : 0};
+		var get = {"_id" : 0, "__v" : 0, "store" : 0, "id" : 0};
+		var get_create = {"_id" : 0, "__v" : 0, "store" : 0};
 		var option = {upsert : true, new : true, useFindAndModify : false};
 		
 		Coupon.find(condition, get, function(error, data){
@@ -419,7 +422,25 @@ app.post('/postcouponinfo', function(req, res){
 					// Create entity and save 'change' as num_coupon.
 					if (data.toString() == ''){
 						console.log('Create new coupon.');
-						Coupon.create({"store" : store, "id" : id, "num_coupon" : change});
+						console.log(store);
+						console.log(id);
+						console.log(change);
+						Coupon.create({"store" : store, "id" : id, "num_coupon" : change}, function(error){
+							if (error){
+								console.log(error);
+							}else{
+								Coupon.find(condition, get_create, function(error, newdata){
+									if (error){
+										console.log(error);
+									}else{
+										data = newdata;
+										res.setHeader('Content-Type', 'text/json');
+										res.write(' ' + data.toString());
+										res.end();
+									}
+								});
+							}
+						});		
 					// Thia user already has coupon for this store.
 					// Find and update num_coupon.
 					}else{
