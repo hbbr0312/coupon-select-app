@@ -121,9 +121,19 @@ public class LoginFragment extends Fragment implements MyEventListener {
                 ismanager=true;
                 MainActivity.ismanager=true;
                 MainActivity.storename=storename;
+                MainActivity.storenamee=storename;
+                MainActivity.colorr=color;
+                MainActivity.logoo=logo;
                 PostcouponActivity.store=storename;
                 new GETing(this).execute("http://socrip4.kaist.ac.kr:3780/getstoreinfo?storename="+storename);
                 return;
+            }else{
+                    MainActivity.firstlogin=true;
+                    MainActivity.namee=name;
+                    MainActivity.idd=userid;
+                    MainActivity.phonee=phone;
+                MainActivity.session.setInfo(userid, name, phone, ismanager, storename,logo,color);
+                startActivity(intent);
             }
 
         } else if (loginsuccess == -1) {
@@ -147,9 +157,10 @@ public class LoginFragment extends Fragment implements MyEventListener {
                 Log.e("json", "error");
                 e.printStackTrace();
             }
+            MainActivity.session.setInfo(userid, name, phone, ismanager, storename,logo,color);
+            startActivity(intent);
         }
-        MainActivity.session.setInfo(userid, name, phone, ismanager, storename,logo,color);
-        startActivity(intent);
+
     }
 
 

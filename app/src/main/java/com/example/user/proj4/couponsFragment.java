@@ -65,7 +65,7 @@ public class couponsFragment extends Fragment implements MyEventListener {
     @Override
     public void onStart() {
         super.onStart();
-        Toast.makeText(getContext(), "login "+MainActivity.login, Toast.LENGTH_SHORT).show();
+        //Toast.makeText(getContext(), "login "+MainActivity.login, Toast.LENGTH_SHORT).show();
         if(MainActivity.login){
             //listview
             new GETing(this).execute("http://socrip4.kaist.ac.kr:3780/getcouponinfo?id="+id);

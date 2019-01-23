@@ -5,6 +5,8 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -67,6 +69,12 @@ public class PostcouponActivity extends AppCompatActivity implements MyEventList
     // QR code scanner object.
     private IntentIntegrator qrScan;
 
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+        startActivity(intent);
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -86,6 +94,7 @@ public class PostcouponActivity extends AppCompatActivity implements MyEventList
         scan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                change="0";
                 qrScan.setPrompt("Scanning...");
                 qrScan.initiateScan();
             }
@@ -148,9 +157,14 @@ public class PostcouponActivity extends AppCompatActivity implements MyEventList
             public void onClick(View v) {
                 if(usevalidedit){
                     int d = Integer.parseInt(usenum.getText().toString())*10; //10번적립해야 한번 사용
-                    change = Integer.toString(d);
-                    code="1";
-                    startEvent();
+                    if(d>Integer.parseInt(userpoint)){
+                        Toast.makeText(PostcouponActivity.this,"POINT가 부족합니다.",Toast.LENGTH_SHORT).show();
+                    }
+                    else{
+                        change = Integer.toString(d);
+                        code="1";
+                        startEvent();
+                    }
                 }
             }
         });
@@ -392,8 +406,4 @@ public class PostcouponActivity extends AppCompatActivity implements MyEventList
 
         }
     }
-
-
-
-
 }

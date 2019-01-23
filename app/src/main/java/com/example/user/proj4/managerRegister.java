@@ -87,8 +87,12 @@ public class managerRegister extends AppCompatActivity implements MyEventListene
         storelist.add("dunkin");
         codematch.put("dunkin","AAA");
 
-        storelist.add("test");
-        codematch.put("test","AAA");
+        storelist.add("subway");
+        codematch.put("subway","AAA");
+
+        storelist.add("papalado");
+        codematch.put("papalado","AAA");
+
 
 
 

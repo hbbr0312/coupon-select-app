@@ -77,6 +77,15 @@ public class MainActivity extends AppCompatActivity
     TextView tname;
     TextView tid;
     TextView tphone;
+    TextView tstore;
+
+    public static boolean firstlogin;
+    public static String idd;
+    public static String namee;
+    public static String phonee;
+    public static String storenamee;
+    public static String colorr;
+    public static String logoo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,6 +95,7 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setImageResource(R.drawable.re);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -106,6 +116,7 @@ public class MainActivity extends AppCompatActivity
         tname = headerView.findViewById(R.id.name);
         tid = headerView.findViewById(R.id.userid);
         tphone = headerView.findViewById(R.id.phone);
+        tstore = headerView.findViewById(R.id.store);
 
         session = new Session(MainActivity.this);
     }
@@ -114,9 +125,9 @@ public class MainActivity extends AppCompatActivity
     protected void onStart(){
         super.onStart();
         invalidateOptionsMenu();
+        //session.logout();
         Log.e("main","onstart");
-        Log.e("main public login",""+login);
-        Log.e("main public ismanager",""+ismanager);
+
 
         //처음 login 했을때
         info = session.getInfo();
@@ -137,11 +148,14 @@ public class MainActivity extends AppCompatActivity
             tname.setText(name+" 고객님");
             tid.setText("ID : "+userid);
             tphone.setText("Phone number : "+phone);
-            couponsFragment cf = new couponsFragment();
+            if(ismanager) tstore.setText("관리매장 : "+storename);
+            Log.e("updating",".......");
+            couponsFragment lf = new couponsFragment();
             fragmentManager = getSupportFragmentManager();
             fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.replace(R.id.fragmentA,cf);
+            fragmentTransaction.replace(R.id.fragmentA,lf);
             fragmentTransaction.commit();
+
         }else{
             Log.e("updating","현재상태 로그아웃");
             tname.setText("로그인이 필요합니다.");
@@ -153,26 +167,43 @@ public class MainActivity extends AppCompatActivity
             fragmentTransaction.replace(R.id.fragmentA,lf);
             fragmentTransaction.commit();
         }
+        Log.e("main public login",""+login);
+        Log.e("main public ismanager",""+ismanager);
     }
 
     //session에서 준 정보를 가지고 login했는지 보고 login값 재설정,유저정보 업데이트
     public void getsession(){
-        userid = info.get("id");
-        if(userid.length()>0){ //login session maintain
-            login=true;
+        if(firstlogin){
+            userid = idd;
+            phone = phonee;
+            name = namee;
+            if(ismanager){
+                storename = storenamee;
+                color = colorr;
+                logo = logoo;
+                PostcouponActivity.store=storename;
+                PostcouponActivity.color=color;
+                PostcouponActivity.logo=decodeBase64(logo);
+                couponsettingActivity.storecolor=color;
+                couponsettingActivity.storelogo=decodeBase64(logo);
+            }
+            firstlogin=false;
         }
-        phone = info.get("phone");
-        name = info.get("name");
-        if(info.get("ismanager").equals("true")) {
-            ismanager=true;
-            storename = info.get("storename");
-            color = info.get("color");
-            logo = info.get("logo");
-            PostcouponActivity.store=storename;
-            PostcouponActivity.color=color;
-            PostcouponActivity.logo=decodeBase64(logo);
-            couponsettingActivity.storecolor=color;
-            couponsettingActivity.storelogo=decodeBase64(logo);
+        else{
+            userid = info.get("id");
+            Log.e("userid",userid);
+            if(userid.length()>0){ //login session maintain
+                login=true;
+            }
+            phone = info.get("phone");
+            name = info.get("name");
+            if(info.get("ismanager").equals("true")) {
+                ismanager=true;
+                storename = info.get("storename");
+                color = info.get("color");
+                logo = info.get("logo");
+
+            }
         }
     }
     public static Bitmap decodeBase64(String input)
@@ -270,8 +301,9 @@ public class MainActivity extends AppCompatActivity
     private void hideItem(){
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         Menu nav_menu = navigationView.getMenu();
-        nav_menu.findItem(R.id.nav_manage).setVisible(false);
-        nav_menu.findItem(R.id.nav_setting).setVisible(false);
+        nav_menu.findItem(R.id.hide).setVisible(false);
+        //nav_menu.findItem(R.id.nav_manage).setVisible(false);
+        //nav_menu.findItem(R.id.nav_setting).setVisible(false);
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -279,12 +311,9 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-        if(id == R.id.nav_usable){
-            /**사용가능한 쿠폰*/
-        }
 
         /**쿠폰 사용 적립 관리*/
-        else if (id == R.id.nav_manage) {
+        if (id == R.id.nav_manage) {
             if(permission(true)){
 
                 Intent intent = new Intent(MainActivity.this,PostcouponActivity.class);

@@ -43,6 +43,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+
 //manager가 처음에 회원가입할때만 띄우는 액티비티임
 public class couponsettingActivity extends AppCompatActivity implements MyEventListener {
     //현재값
@@ -66,6 +67,12 @@ public class couponsettingActivity extends AppCompatActivity implements MyEventL
     private int PICK_IMAGE_REQUEST = 1;
     private String response;
     private boolean getting=true;
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+        startActivity(intent);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

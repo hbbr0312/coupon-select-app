@@ -12,16 +12,19 @@
         android:orientation="vertical">
         <Button
             android:id="@+id/buttonA"
-            android:layout_width="wrap_content"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
-            android:text="Picker 1"
+            android:background="@color/colorAccent"
+            android:text="COLOR 선택"
             android:onClick="Picker1Click" />
 
         <Button
-            android:layout_width="wrap_content"
+            android:layout_width="100dp"
+            android:layout_marginTop="10dp"
             android:layout_height="wrap_content"
+            android:background="@color/colorAccent"
             android:id="@+id/logoselect"
-            android:text="logo선택"/>
+            android:text="logo 선택"/>
 
 
         <TextView
@@ -70,9 +73,12 @@
                 />
         </LinearLayout>
         <Button
+            android:layout_marginTop="10dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="설정 완료"
+            android:background="@color/colorPrimaryDark"
+            android:textColor="#FFFFFF"
             android:id="@+id/setting"/>
 
     </LinearLayout>
